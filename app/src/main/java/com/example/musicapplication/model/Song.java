@@ -1,79 +1,159 @@
 package com.example.musicapplication.model;
 
 public class Song {
-    public static final Song EMPTY_SONG = new Song(-1, "", -1, -1, -1, "", -1, -1, "", -1, "");
+    Long id;
+    String name;
+    String singer;
+    String composer;
+    String album;
+    String lyric;
+    String source;
+    String genre1;
+    String genre2;
+    String genre3;
+    String genre4;
+    String genre5;
+    String weburl;
+    String downloadurl;
+    String thumbnail;
+    public Song(){
 
-    private final int id;
-    private final String title;
-    private final int trackNumber;
-    private final int year;
-    private final long duration;
-    private final String data;
-    private final long dateModified;
-    private final int albumId;
-    private final String albumName;
-    private final int artistId;
-    private final String artistName;
-
-    public Song(int id, String title, int trackNumber, int year, long duration, String data, long dateModified, int albumId, String albumName, int artistId, String artistName) {
+    }
+    public Song(Long id, String name, String singer, String composer, String album, String lyric, String source, String genre1, String genre2, String genre3, String genre4, String genre5, String weburl, String downloadurl, String thumbnail) {
         this.id = id;
-        this.title = title;
-        this.trackNumber = trackNumber;
-        this.year = year;
-        this.duration = duration;
-        this.data = data;
-        this.dateModified = dateModified;
-        this.albumId = albumId;
-        this.albumName = albumName;
-        this.artistId = artistId;
-        this.artistName = artistName;
+        this.name = name;
+        this.singer = singer;
+        this.composer = composer;
+        this.album = album;
+        this.lyric = lyric;
+        this.source = source;
+        this.genre1 = genre1;
+        this.genre2 = genre2;
+        this.genre3 = genre3;
+        this.genre4 = genre4;
+        this.genre5 = genre5;
+        this.weburl = weburl;
+        this.downloadurl = downloadurl;
+        this.thumbnail = thumbnail;
     }
 
-    public static Song getEmptySong() {
-        return EMPTY_SONG;
-    }
-
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public String getTitle() {
-        return title;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public int getTrackNumber() {
-        return trackNumber;
+    public String getName() {
+        return name;
     }
 
-    public int getYear() {
-        return year;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public long getDuration() {
-        return duration;
+    public String getSinger() {
+        return singer;
     }
 
-    public String getData() {
-        return data;
+    public void setSinger(String singer) {
+        this.singer = singer;
     }
 
-    public long getDateModified() {
-        return dateModified;
+    public String getComposer() {
+        return composer;
     }
 
-    public int getAlbumId() {
-        return albumId;
+    public void setComposer(String composer) {
+        this.composer = composer;
     }
 
-    public String getAlbumName() {
-        return albumName;
+    public String getAlbum() {
+        return album;
     }
 
-    public int getArtistId() {
-        return artistId;
+    public void setAlbum(String album) {
+        this.album = album;
     }
 
-    public String getArtistName() {
-        return artistName;
+    public String getLyric() {
+        return lyric;
+    }
+
+    public void setLyric(String lyric) {
+        this.lyric = lyric;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getGenre1() {
+        return genre1;
+    }
+
+    public void setGenre1(String genre1) {
+        this.genre1 = genre1;
+    }
+
+    public String getGenre2() {
+        return genre2;
+    }
+
+    public void setGenre2(String genre2) {
+        this.genre2 = genre2;
+    }
+
+    public String getGenre3() {
+        return genre3;
+    }
+
+    public void setGenre3(String genre3) {
+        this.genre3 = genre3;
+    }
+
+    public String getGenre4() {
+        return genre4;
+    }
+
+    public void setGenre4(String genre4) {
+        this.genre4 = genre4;
+    }
+
+    public String getGenre5() {
+        return genre5;
+    }
+
+    public void setGenre5(String genre5) {
+        this.genre5 = genre5;
+    }
+
+    public String getWeburl() {
+        return weburl;
+    }
+
+    public void setWeburl(String weburl) {
+        this.weburl = weburl;
+    }
+
+    public String getDownloadurl() {
+        return downloadurl;
+    }
+
+    public void setDownloadurl(String downloadurl) {
+        this.downloadurl = downloadurl;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
     }
 }
