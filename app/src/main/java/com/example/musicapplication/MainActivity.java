@@ -12,19 +12,23 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.musicapplication.model.DatabaseManager;
+import com.example.musicapplication.model.Song;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-
+    private DatabaseManager dbManager = new DatabaseManager();
+    private List<Song> listSong = dbManager.getListSong();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         getSupportActionBar().hide();
-
         BottomNavigationView navView = findViewById(R.id.bottom_navigation_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
         Log.d(TAG, "onCreate: ------------------------------------------------------");
+
     }
 
     public void goToFragment(Fragment fragment) {
@@ -62,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.d("Lifecycle ------ ", "Main Activity: onResume()");
-
     }
 
 
