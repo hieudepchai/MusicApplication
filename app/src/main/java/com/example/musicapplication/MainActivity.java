@@ -18,12 +18,15 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    private DatabaseManager dbManager = new DatabaseManager();
-    private List<Song> listSong = dbManager.getListSong();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,9 +42,28 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
         Log.d(TAG, "onCreate: ------------------------------------------------------");
+//        try {
+//            getListSongViaAPI();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
     }
-
+    public void getListSongViaAPI() throws IOException {
+        URL url = new URL("https://mymusic-0000-255417.firebaseio.com/songs.json");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Accept", "application/json");
+        if (conn.getResponseCode() != 200) {
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + conn.getResponseCode());
+        }
+        BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+        String output;
+        while ((output = br.readLine()) != null) {
+            System.out.println(output);
+        }
+    }
     public void goToFragment(Fragment fragment) {
 
         getSupportFragmentManager()
