@@ -1,5 +1,6 @@
 package com.example.musicapplication;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -17,19 +18,39 @@ import com.example.musicapplication.model.Song;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private List<Song> listSong;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ------------------------------------------------------");
+        new GetDataFirebaseAPITask().execute();
+        ((MyApplication) this.getApplication()).addRealtimeUpdate(new MyApplication.MyAppCallback(){
+
+            @Override
+            public void SongCallBack(List<Song> callbackListSong) {
+                if(callbackListSong.size()!=0){
+                    listSong.clear();
+                    listSong.addAll(callbackListSong);
+                }
+            }
+        });
+    }
+    public void loadUI(){
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
         BottomNavigationView navView = findViewById(R.id.bottom_navigation_view);
@@ -41,28 +62,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
-        Log.d(TAG, "onCreate: ------------------------------------------------------");
-//        try {
-//            getListSongViaAPI();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-    }
-    public void getListSongViaAPI() throws IOException {
-        URL url = new URL("https://mymusic-0000-255417.firebaseio.com/songs.json");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Accept", "application/json");
-        if (conn.getResponseCode() != 200) {
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + conn.getResponseCode());
-        }
-        BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-        String output;
-        while ((output = br.readLine()) != null) {
-            System.out.println(output);
-        }
     }
     public void goToFragment(Fragment fragment) {
 
@@ -74,6 +73,52 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
+    public class GetDataFirebaseAPITask extends AsyncTask<Void,Void,String> {
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            //call api to get json string from firebase
+            URL url = null;
+            HttpURLConnection conn = null;
+            try {
+                url = new URL("https://mymusic-0000-255417.firebaseio.com/songs.json");
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
+                if (conn.getResponseCode() != 200) {
+                    throw new RuntimeException("Failed : HTTP error code : "
+                            + conn.getResponseCode());
+                }
+                BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+                String output = br.readLine();
+                return output;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                return "";
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+                return "";
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "";
+            } finally {
+                conn.disconnect();
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            //get the result from doInBackground and convert it to List<Song> using Gson
+            GsonBuilder builder = new GsonBuilder();
+            builder.setPrettyPrinting();
+            Gson gson = builder.create();
+            listSong = gson.fromJson(s, new TypeToken<List<Song>>(){}.getType());
+            //load UIT
+            loadUI();
+        }
+    }
     @Override
     protected void onStart() {
         super.onStart();
