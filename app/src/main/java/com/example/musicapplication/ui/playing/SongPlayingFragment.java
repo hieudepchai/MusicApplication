@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,7 +59,14 @@ public class SongPlayingFragment extends Fragment implements OnActionClickedList
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+
         View root = inflater.inflate( R.layout.fragment_song_playing, container, false );
+
+        ItemTrackAdapter trackAdapter = new ItemTrackAdapter(getActivity());
+        RecyclerView trackItem = root.findViewById( R.id.track_view );
+        trackItem.setAdapter( trackAdapter );
+        trackItem.setLayoutManager( new LinearLayoutManager( getActivity() ) );
 
         final InteractivePlayerView mInteractivePlayerView = root.findViewById(R.id.interactivePlayerView);
         mInteractivePlayerView.setMax(60);
