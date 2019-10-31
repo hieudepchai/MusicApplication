@@ -3,7 +3,11 @@ package com.example.musicapplication.model;
 public class Song {
     Long id;
     String name;
-    String singer;
+    String singer1;
+    String singer2;
+    String singer3;
+    String singer4;
+    String singer5;
     String composer;
     String album;
     String lyric;
@@ -19,10 +23,15 @@ public class Song {
     public Song(){
 
     }
-    public Song(Long id, String name, String singer, String composer, String album, String lyric, String source, String genre1, String genre2, String genre3, String genre4, String genre5, String weburl, String downloadurl, String thumbnail) {
+
+    public Song(Long id, String name, String singer1, String singer2, String singer3, String singer4, String singer5, String composer, String album, String lyric, String source, String genre1, String genre2, String genre3, String genre4, String genre5, String weburl, String downloadurl, String thumbnail) {
         this.id = id;
         this.name = name;
-        this.singer = singer;
+        this.singer1 = singer1;
+        this.singer2 = singer2;
+        this.singer3 = singer3;
+        this.singer4 = singer4;
+        this.singer5 = singer5;
         this.composer = composer;
         this.album = album;
         this.lyric = lyric;
@@ -53,12 +62,44 @@ public class Song {
         this.name = name;
     }
 
-    public String getSinger() {
-        return singer;
+    public String getSinger1() {
+        return singer1;
     }
 
-    public void setSinger(String singer) {
-        this.singer = singer;
+    public void setSinger1(String singer1) {
+        this.singer1 = singer1;
+    }
+
+    public String getSinger2() {
+        return singer2;
+    }
+
+    public void setSinger2(String singer2) {
+        this.singer2 = singer2;
+    }
+
+    public String getSinger3() {
+        return singer3;
+    }
+
+    public void setSinger3(String singer3) {
+        this.singer3 = singer3;
+    }
+
+    public String getSinger4() {
+        return singer4;
+    }
+
+    public void setSinger4(String singer4) {
+        this.singer4 = singer4;
+    }
+
+    public String getSinger5() {
+        return singer5;
+    }
+
+    public void setSinger5(String singer5) {
+        this.singer5 = singer5;
     }
 
     public String getComposer() {
