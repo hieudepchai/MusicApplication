@@ -23,7 +23,7 @@ import java.util.List;
 import co.mobiwise.library.InteractivePlayerView;
 import co.mobiwise.library.OnActionClickedListener;
 
-public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements OnActionClickedListener {
     private static final String TAG = "Item Adapter";
     private Context mContext;
     private static final int USER_ACTIVITY_LAYOUT= 0;
@@ -33,7 +33,7 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private boolean playPause;
     int pauseCurrentPosition;
     private ProgressDialog progressDialog;
-    String url = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3";
+    String url = "https://www.ssaurel.com/tmp/mymusic.mp3";
 
     private List<Song> songList = new ArrayList<>();
 
@@ -82,6 +82,9 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             userActivityViewHolder.title.setText("Anh yeu em");
             userActivityViewHolder.artist.setText("Quan Nguyen");
             userActivityViewHolder.background.setImageResource(R.drawable.one_direction_blur);
+            userActivityViewHolder.mInteractivePlayerView.setMax(60);
+            userActivityViewHolder.mInteractivePlayerView.setProgress(0);
+            userActivityViewHolder.mInteractivePlayerView.setOnActionClickedListener(this);
         }
         else {
 
@@ -94,10 +97,22 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemCount() {
-        return 4;
+        return 7;
     }
 
-
+    @Override
+    public void onActionClicked(int id) {
+        switch (id) {
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            default:
+                break;
+        }
+    }
 
 
     class MusicPlayingHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -120,16 +135,12 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         @Override
         public void onClick(View v) {
-            mInteractivePlayerView.setMax(60);
-            mInteractivePlayerView.setProgress(0);
-            mInteractivePlayerView.setOnActionClickedListener((OnActionClickedListener) this);
-
             if (!playPause) {
                 control.setBackgroundResource(R.drawable.ic_action_pause);
-                mInteractivePlayerView.start();
 
                 if (initialStage) {
                     new Player().execute(url);
+                    mInteractivePlayerView.start();
 
                 } else {
                     if (!mediaPlayer.isPlaying()){
@@ -222,13 +233,5 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     }
 
-//    public void onBindViewHolder(@NonNull ItemTrackAdapter.ItemHolder itemHolder, int i) {
-//
-//        TextView mMusicName = itemHolder.title;
-//        mMusicName.setText( "Nhac ten gi ke bo?" );
-//        TextView mAuthor = itemHolder.author;
-//        mAuthor.setText( "Dung Tran" );
-//
-//    }
 
 }

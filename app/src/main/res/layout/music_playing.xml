@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
@@ -36,8 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/musicArtistName"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp">
+        android:layout_centerHorizontal="true">
 
 
         <co.mobiwise.library.InteractivePlayerView
@@ -69,15 +68,17 @@
             android:layout_toLeftOf="@+id/interactivePlayerView"
             android:background="@android:drawable/ic_media_previous" />
 
+
+
     </RelativeLayout>
 
 
     <RelativeLayout
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_below="@+id/player"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="174dp"
+        android:layout_alignBottom="@+id/player"
+        android:layout_marginRight="20dp"
         android:background="@drawable/circle">
 
         <ImageView
@@ -87,4 +88,5 @@
             android:layout_centerInParent="true"
             android:background="@drawable/ic_action_play" />
     </RelativeLayout>
+
 </RelativeLayout>
