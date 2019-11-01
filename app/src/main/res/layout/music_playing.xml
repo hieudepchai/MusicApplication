@@ -72,13 +72,40 @@
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/latestAddedSongs"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:layout_below="@+id/player"
+        android:background="#262626">
+
+        <TextView
+            android:id="@+id/latestAddedSongTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:text="Latest Added"
+            android:textColor="#EEEEEE"
+            android:textSize="18sp" />
+
+        <View
+            android:id="@+id/view1"
+            android:layout_width="match_parent"
+            android:layout_height="1.5dp"
+            android:layout_below="@+id/latestAddedSongTitle"
+            android:background="#80fafafa" />
+    </RelativeLayout>
+
 
     <RelativeLayout
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_alignParentRight="true"
-        android:layout_alignBottom="@+id/player"
+        android:layout_alignTop="@+id/latestAddedSongs"
         android:layout_marginRight="20dp"
+        android:layout_marginTop="-30dp"
         android:background="@drawable/circle">
 
         <ImageView
