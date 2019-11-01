@@ -1,15 +1,20 @@
 package com.example.musicapplication.ui.playing;
 
+import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +24,7 @@ import com.example.musicapplication.R;
 
 import java.io.IOException;
 
+import butterknife.BindView;
 import co.mobiwise.library.InteractivePlayerView;
 import co.mobiwise.library.OnActionClickedListener;
 
@@ -34,7 +40,11 @@ public class SongPlayingFragment extends Fragment implements OnActionClickedList
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     int pauseCurrentPosition;
-    MediaPlayer mediaPlayer = new MediaPlayer();
+    MediaPlayer mediaPlayer;
+    private boolean initialStage = true;
+    private boolean playPause;
+    private ProgressDialog progressDialog;
+    private ItemTrackAdapter trackAdapter;
 
     private OnFragmentInteractionListener mListener;
 
@@ -63,78 +73,123 @@ public class SongPlayingFragment extends Fragment implements OnActionClickedList
 
         View root = inflater.inflate( R.layout.fragment_song_playing, container, false );
 
-        ItemTrackAdapter trackAdapter = new ItemTrackAdapter(getActivity());
-        RecyclerView trackItem = root.findViewById( R.id.track_view );
-        trackItem.setAdapter( trackAdapter );
-        trackItem.setLayoutManager( new LinearLayoutManager( getActivity() ) );
-
-        final InteractivePlayerView mInteractivePlayerView = root.findViewById(R.id.interactivePlayerView);
-        mInteractivePlayerView.setMax(60);
-        mInteractivePlayerView.setProgress(0);
-        mInteractivePlayerView.setOnActionClickedListener(this);
-        String url = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3"; // your URL here
+//init mediaplayer
+        mediaPlayer = new MediaPlayer();
+        progressDialog = new ProgressDialog(getActivity());
+//create the time progress for progressbar
+//        final InteractivePlayerView mInteractivePlayerView = root1.findViewById(R.id.interactivePlayerView);
+//        mInteractivePlayerView.setMax(60);
+//        mInteractivePlayerView.setProgress(0);
+//        mInteractivePlayerView.setOnActionClickedListener(this);
+//
+//        final String url = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3"; // your URL here
         mediaPlayer.setAudioStreamType( AudioManager.STREAM_MUSIC);
-        try {
-            mediaPlayer.setDataSource(url);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            mediaPlayer.prepare(); // might take long! (for buffering, etc)
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        final ImageView imageView = (ImageView) root.findViewById(R.id.control);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!mInteractivePlayerView.isPlaying()) {
-                    if(mediaPlayer==null) {
-                        mInteractivePlayerView.start();
-                        mediaPlayer.start();
-                        imageView.setBackgroundResource(R.drawable.ic_action_pause);
-                    }
-                    if(!mediaPlayer.isPlaying()){
-                        mInteractivePlayerView.start();
-                        mediaPlayer.seekTo(pauseCurrentPosition);
-                        mediaPlayer.start();
-                        imageView.setBackgroundResource(R.drawable.ic_action_pause);
+        //recycler View
+        trackAdapter = new ItemTrackAdapter(getActivity(), mediaPlayer, progressDialog);
+        RecyclerView musicRecyclerView = root.findViewById( R.id.musicRecyclerView );
+        musicRecyclerView.setAdapter( trackAdapter );
+        musicRecyclerView.setLayoutManager( new LinearLayoutManager( getActivity() ) );
 
-                    }
-                } else {
-                    mInteractivePlayerView.stop();
-                    mediaPlayer.pause();
-                    pauseCurrentPosition=mediaPlayer.getCurrentPosition();
-                    imageView.setBackgroundResource(R.drawable.ic_action_play);
-                }
-            }
-        });
+//set the button when click
+//        final ImageView imageView = (ImageView) root1.findViewById(R.id.control);
+//        imageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (!playPause) {
+//                    imageView.setBackgroundResource(R.drawable.ic_action_pause);
+//                    mInteractivePlayerView.start();
+//
+//                    if (initialStage) {
+//                        new Player().execute(url);
+//
+//                    } else {
+//                        if (!mediaPlayer.isPlaying()){
+//                            mInteractivePlayerView.start();
+//                        mediaPlayer.seekTo(pauseCurrentPosition);
+//                        mediaPlayer.start();}
+//
+//                        if(mediaPlayer==null) {
+//                            mInteractivePlayerView.start();
+//                            mediaPlayer.start();
+//                        }
+//                        playPause = true;
+//}
+//                } else {
+//                    imageView.setBackgroundResource(R.drawable.ic_action_play);
+//
+//                    if (mediaPlayer.isPlaying()) {
+//                        mediaPlayer.pause();
+//                        mInteractivePlayerView.stop();
+//                        pauseCurrentPosition=mediaPlayer.getCurrentPosition();
+//                    }
+//
+//                    playPause = false;
+//                }
+//            }
+//        });
+
         return root;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction( uri );
+    public void onPause() {
+        super.onPause();
+
+        if (mediaPlayer != null) {
+            mediaPlayer.reset();
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
     }
 
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach( context );
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException( context.toString()
-//                    + " must implement OnFragmentInteractionListener" );
-//        }
-//    }
+//    class Player extends AsyncTask<String, Void, Boolean> {
+//        @Override
+//        protected Boolean doInBackground(String... strings) {
+//            Boolean prepared = false;
 //
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
+//            try {
+//                mediaPlayer.setDataSource(strings[0]);
+//                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//                    @Override
+//                    public void onCompletion(MediaPlayer mediaPlayer) {
+//                        initialStage = true;
+//                        playPause = false;
+//                        mediaPlayer.stop();
+//                        mediaPlayer.reset();
+//                    }
+//                });
+//
+//                mediaPlayer.prepare();
+//                prepared = true;
+//
+//            } catch (Exception e) {
+//                Log.e("MyAudioStreamingApp", e.getMessage());
+//                prepared = false;
+//            }
+//
+//            return prepared;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Boolean aBoolean) {
+//            super.onPostExecute(aBoolean);
+//
+//            if (progressDialog.isShowing()) {
+//                progressDialog.cancel();
+//
+//            }
+//
+//            mediaPlayer.start();
+//            initialStage = false;
+//        }
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//
+//            progressDialog.setMessage("Loading...");
+//            progressDialog.show();
+//        }
 //    }
 
     @Override
