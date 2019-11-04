@@ -140,7 +140,6 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                 if (initialStage) {
                     new Player().execute(url);
-                    mInteractivePlayerView.start();
 
                 } else {
                     if (!mediaPlayer.isPlaying()){
@@ -201,6 +200,8 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                 if (progressDialog.isShowing()) {
                     progressDialog.cancel();
+                    mInteractivePlayerView.start();
+
 
                 }
 
