@@ -2,6 +2,7 @@ package com.example.musicapplication.ui.playing;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.media.AudioFormat;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -17,8 +18,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.musicapplication.R;
 import com.example.musicapplication.model.Song;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import co.mobiwise.library.InteractivePlayerView;
 import co.mobiwise.library.OnActionClickedListener;
@@ -33,7 +39,8 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private boolean playPause;
     int pauseCurrentPosition;
     private ProgressDialog progressDialog;
-    String url = "https://www.ssaurel.com/tmp/mymusic.mp3";
+    long timer;
+    String url = "https://server.hoangbk.com/api/zingmp3/download?id=ZWA86FZB&type=320";
 
     private List<Song> songList = new ArrayList<>();
 
@@ -85,6 +92,7 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             userActivityViewHolder.mInteractivePlayerView.setMax(60);
             userActivityViewHolder.mInteractivePlayerView.setProgress(0);
             userActivityViewHolder.mInteractivePlayerView.setOnActionClickedListener(this);
+//            userActivityViewHolder.time.setText((int)timer);
         }
         else {
 
@@ -119,9 +127,11 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         private TextView title;
         private TextView artist;
+        private TextView time;
         private ImageView background;
         private InteractivePlayerView mInteractivePlayerView;
         private ImageView control;
+        protected View control_cover;
 
         public MusicPlayingHolder(View itemView) {
             super(itemView);
@@ -130,7 +140,8 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             background = (ImageView)itemView.findViewById(R.id.background);
             mInteractivePlayerView = itemView.findViewById(R.id.interactivePlayerView);
             control = itemView.findViewById(R.id.control);
-            control.setOnClickListener(this);
+            control_cover = itemView.findViewById(R.id.control_cover);
+            control_cover.setOnClickListener(this);
         }
 
         @Override
@@ -182,9 +193,11 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                             mediaPlayer.reset();
                         }
                     });
-
                     mediaPlayer.prepare();
                     prepared = true;
+                    timer = TimeUnit.MILLISECONDS.toSeconds(mediaPlayer.getDuration());
+                    Log.d("ItemTrackAdapter", "-----------------------------timer: " + timer);
+
 
                 } catch (Exception e) {
                     Log.e("MyAudioStreamingApp", e.getMessage());
@@ -200,6 +213,8 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                 if (progressDialog.isShowing()) {
                     progressDialog.cancel();
+                    Log.d("ItemTrackAdapter", "-----------------------------timer: " + timer);
+                    mInteractivePlayerView.setMax((int)timer);
                     mInteractivePlayerView.start();
 
 
