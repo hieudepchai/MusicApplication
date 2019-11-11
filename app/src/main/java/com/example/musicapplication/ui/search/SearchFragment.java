@@ -19,8 +19,7 @@ public class SearchFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        searchViewModel =
-                ViewModelProviders.of(this).get(SearchViewModel.class);
+        searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
         View root = inflater.inflate(R.layout.fragment_search, container, false);
         final TextView textView = root.findViewById(R.id.text_search);
         searchViewModel.getText().observe(this, new Observer<String>() {

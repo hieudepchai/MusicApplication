@@ -1,54 +1,49 @@
 package com.example.musicapplication;
 
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.musicapplication.model.DatabaseManager;
 import com.example.musicapplication.model.Song;
+import com.example.musicapplication.service.RetrofitInterface;
+import com.example.musicapplication.service.RetrofitService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    private List<Song> listSong;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate: ------------------------------------------------------");
-        new GetDataFirebaseAPITask().execute();
-        ((MyApplication) this.getApplication()).addRealtimeUpdate(new MyApplication.MyAppCallback(){
+        RetrofitInterface retrofit_interface = RetrofitService.getService();
+        Call<List<Song>> callSong = retrofit_interface.getSong();
+        callSong.enqueue(new Callback<List<Song>>() {
+            @Override
+            public void onResponse(Call<List<Song>> call, Response<List<Song>> response) {
+                List<Song> receivedListSong = response.body();
+                Log.d("listSong: ", String.valueOf(receivedListSong.size()));
+                loadUI();
+            }
 
             @Override
-            public void SongCallBack(List<Song> callbackListSong) {
-                if(callbackListSong.size()!=0){
-                    listSong.clear();
-                    listSong.addAll(callbackListSong);
-                }
+            public void onFailure(Call<List<Song>> call, Throwable t) {
+
             }
         });
+
     }
     public void loadUI(){
         setContentView(R.layout.activity_main);
@@ -73,52 +68,6 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-    public class GetDataFirebaseAPITask extends AsyncTask<Void,Void,String> {
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            //call api to get json string from firebase
-            URL url = null;
-            HttpURLConnection conn = null;
-            try {
-                url = new URL("https://mymusic-0000-255417.firebaseio.com/songs.json");
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("Accept", "application/json");
-                if (conn.getResponseCode() != 200) {
-                    throw new RuntimeException("Failed : HTTP error code : "
-                            + conn.getResponseCode());
-                }
-                BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-                String output = br.readLine();
-                return output;
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                return "";
-            } catch (ProtocolException e) {
-                e.printStackTrace();
-                return "";
-            } catch (IOException e) {
-                e.printStackTrace();
-                return "";
-            } finally {
-                conn.disconnect();
-            }
-
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            //get the result from doInBackground and convert it to List<Song> using Gson
-            GsonBuilder builder = new GsonBuilder();
-            builder.setPrettyPrinting();
-            Gson gson = builder.create();
-            listSong = gson.fromJson(s, new TypeToken<List<Song>>(){}.getType());
-            //load UIT
-            loadUI();
-        }
-    }
     @Override
     protected void onStart() {
         super.onStart();
