@@ -2,6 +2,7 @@ package com.example.musicapplication.ui.playing;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
@@ -13,10 +14,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.musicapplication.MainActivity;
 import com.example.musicapplication.R;
 import com.example.musicapplication.model.Song;
+import com.example.musicapplication.ui.home.HomeFragment;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,7 +35,7 @@ import co.mobiwise.library.OnActionClickedListener;
 
 public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements OnActionClickedListener {
     private static final String TAG = "Item Adapter";
-    private Context mContext;
+    private static SongPlayingFragment mContext=null;
     private static final int USER_ACTIVITY_LAYOUT= 0;
     private static final int MUSIC_ITEM_LAYOUT= 1;
     MediaPlayer mediaPlayer;
@@ -44,7 +48,7 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private List<Song> songList = new ArrayList<>();
 
-    public ItemTrackAdapter(Context mContext, MediaPlayer mediaPlayer, ProgressDialog progressDialog){
+    public ItemTrackAdapter(SongPlayingFragment mContext, MediaPlayer mediaPlayer, ProgressDialog progressDialog){
         this.mContext = mContext;
         this.mediaPlayer = mediaPlayer;
         this.progressDialog = progressDialog;
@@ -86,19 +90,19 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if(holder.getItemViewType()== USER_ACTIVITY_LAYOUT)
         {
             MusicPlayingHolder userActivityViewHolder = (MusicPlayingHolder)holder;
-            userActivityViewHolder.title.setText("Anh yeu em");
-            userActivityViewHolder.artist.setText("Quan Nguyen");
+            userActivityViewHolder.title.setText("Song name");
+            userActivityViewHolder.artist.setText("Artist");
             userActivityViewHolder.background.setImageResource(R.drawable.one_direction_blur);
             userActivityViewHolder.mInteractivePlayerView.setMax(60);
             userActivityViewHolder.mInteractivePlayerView.setProgress(0);
             userActivityViewHolder.mInteractivePlayerView.setOnActionClickedListener(this);
-//            userActivityViewHolder.time.setText((int)timer);
+
         }
         else {
 
             MusicItemHolder musicViewHolder = (MusicItemHolder)holder;
-            musicViewHolder.songName.setText("Ten gi nghi hoai ko ra");
-            musicViewHolder.artist.setText("Ten ca si la gi?");
+            musicViewHolder.songName.setText("Song name");
+            musicViewHolder.artist.setText("Artist");
         }
 
     }
@@ -131,6 +135,7 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private ImageView background;
         private InteractivePlayerView mInteractivePlayerView;
         private ImageView control;
+        private ImageView back_button;
         protected View control_cover;
 
         public MusicPlayingHolder(View itemView) {
@@ -142,10 +147,19 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             control = itemView.findViewById(R.id.control);
             control_cover = itemView.findViewById(R.id.control_cover);
             control_cover.setOnClickListener(this);
+            back_button= itemView.findViewById(R.id.back_button);
+            back_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    mContext.onBackPressed();
+                }
+            });
         }
 
         @Override
         public void onClick(View v) {
+
             if (!playPause) {
                 control.setBackgroundResource(R.drawable.ic_action_pause);
 
@@ -156,7 +170,8 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     if (!mediaPlayer.isPlaying()){
                         mInteractivePlayerView.start();
                         mediaPlayer.seekTo(pauseCurrentPosition);
-                        mediaPlayer.start();}
+                        mediaPlayer.start();
+                    }
 
                     if(mediaPlayer==null) {
                         mInteractivePlayerView.start();
@@ -196,7 +211,7 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     mediaPlayer.prepare();
                     prepared = true;
                     timer = TimeUnit.MILLISECONDS.toSeconds(mediaPlayer.getDuration());
-                    Log.d("ItemTrackAdapter", "-----------------------------timer: " + timer);
+//                    Log.d("ItemTrackAdapter", "-----------------------------timer: " + timer);
 
 
                 } catch (Exception e) {
@@ -213,10 +228,10 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                 if (progressDialog.isShowing()) {
                     progressDialog.cancel();
-                    Log.d("ItemTrackAdapter", "-----------------------------timer: " + timer);
+//                    Log.d("ItemTrackAdapter", "-----------------------------timer: " + timer);
                     mInteractivePlayerView.setMax((int)timer);
                     mInteractivePlayerView.start();
-
+                    Log.d("DURATION TIME", "-----------------------------timer: " + mInteractivePlayerView);
 
                 }
 
@@ -238,7 +253,6 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         private TextView songName;
         protected TextView artist;
-
 
 
         public MusicItemHolder(View itemView) {

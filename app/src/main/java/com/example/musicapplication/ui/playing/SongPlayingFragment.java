@@ -5,15 +5,20 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.musicapplication.MainActivity;
 import com.example.musicapplication.R;
+
+import java.security.Key;
 
 import co.mobiwise.library.OnActionClickedListener;
 
@@ -53,6 +58,7 @@ public class SongPlayingFragment extends Fragment {
         // Inflate the layout for this fragment
 
 
+
         View root = inflater.inflate( R.layout.fragment_song_playing, container, false );
 
 //init mediaplayer
@@ -62,7 +68,7 @@ public class SongPlayingFragment extends Fragment {
         mediaPlayer.setAudioStreamType( AudioManager.STREAM_MUSIC);
 
         //recycler View
-        trackAdapter = new ItemTrackAdapter(getActivity(), mediaPlayer, progressDialog);
+        trackAdapter = new ItemTrackAdapter(this, mediaPlayer, progressDialog);
         RecyclerView musicRecyclerView = root.findViewById( R.id.musicRecyclerView );
         musicRecyclerView.setAdapter( trackAdapter );
         musicRecyclerView.setLayoutManager( new LinearLayoutManager( getActivity() ) );
@@ -80,6 +86,13 @@ public class SongPlayingFragment extends Fragment {
         }
     }
 
+
+
+    public void onBackPressed()
+    {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        fm.popBackStack();
+    }
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

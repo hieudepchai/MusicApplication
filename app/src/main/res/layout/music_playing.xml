@@ -11,6 +11,7 @@
         android:background="@drawable/one_direction_blur"
         android:scaleType="centerCrop" />
 
+
     <TextView
         android:id="@+id/musicTitle"
         android:layout_width="wrap_content"
@@ -19,6 +20,13 @@
         android:text="Music Title"
         android:textColor="#FFFFFF"
         android:textSize="20sp" />
+    <ImageView
+        android:id="@+id/back_button"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="@drawable/button_back"
+        android:scaleType="centerCrop"
+        />
 
     <TextView
         android:id="@+id/musicArtistName"
