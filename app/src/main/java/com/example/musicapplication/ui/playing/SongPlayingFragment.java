@@ -5,11 +5,16 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,7 +39,8 @@ public class SongPlayingFragment extends Fragment {
     private ItemTrackAdapter trackAdapter;
 
     private OnFragmentInteractionListener mListener;
-
+    private float x1,x2;
+    static final int MIN_DISTANCE = 150;
     public SongPlayingFragment() {
         // Required empty public constructor
     }
@@ -72,6 +78,21 @@ public class SongPlayingFragment extends Fragment {
         RecyclerView musicRecyclerView = root.findViewById( R.id.musicRecyclerView );
         musicRecyclerView.setAdapter( trackAdapter );
         musicRecyclerView.setLayoutManager( new LinearLayoutManager( getActivity() ) );
+//
+        root.setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
+            @Override
+            public void onSwipeLeft() {
+                onBackPressed();
+                Log.d("Test swipe","Swipe left");
+            }
+            @Override
+            public void onSwipeRight() {
+                onBackPressed();
+                Log.d("Test swipe","Swipe right");
+
+            }
+
+            });
 
         return root;
     }
@@ -85,7 +106,6 @@ public class SongPlayingFragment extends Fragment {
             mediaPlayer = null;
         }
     }
-
 
 
     public void onBackPressed()
