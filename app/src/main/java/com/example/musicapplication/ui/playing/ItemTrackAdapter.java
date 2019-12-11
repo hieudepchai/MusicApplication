@@ -161,7 +161,6 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         public void onClick(View v) {
 
             if (!playPause) {
-                control.setBackgroundResource(R.drawable.ic_action_pause);
 
                 if (initialStage) {
                     new Player().execute(url);
@@ -170,6 +169,7 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     if (!mediaPlayer.isPlaying()){
                         mInteractivePlayerView.start();
                         mediaPlayer.seekTo(pauseCurrentPosition);
+                        control.setBackgroundResource(R.drawable.ic_action_pause);
                         mediaPlayer.start();
                     }
 
@@ -228,10 +228,9 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                 if (progressDialog.isShowing()) {
                     progressDialog.cancel();
-//                    Log.d("ItemTrackAdapter", "-----------------------------timer: " + timer);
                     mInteractivePlayerView.setMax((int)timer);
                     mInteractivePlayerView.start();
-                    Log.d("DURATION TIME", "-----------------------------timer: " + mInteractivePlayerView);
+                    control.setBackgroundResource(R.drawable.ic_action_pause);
 
                 }
 
