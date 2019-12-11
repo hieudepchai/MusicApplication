@@ -1,41 +1,46 @@
 package com.example.musicapplication.ui.playing;
 
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Toast;
 
+import androidx.core.view.GestureDetectorCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.musicapplication.MainActivity;
 import com.example.musicapplication.R;
 
-import java.io.IOException;
+import java.security.Key;
 
-import co.mobiwise.library.InteractivePlayerView;
 import co.mobiwise.library.OnActionClickedListener;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link SongPlayingFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link SongPlayingFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class SongPlayingFragment extends Fragment implements OnActionClickedListener {
+
+public class SongPlayingFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     int pauseCurrentPosition;
-    MediaPlayer mediaPlayer = new MediaPlayer();
+    MediaPlayer mediaPlayer;
+    private boolean initialStage = true;
+    private boolean playPause;
+    private ProgressDialog progressDialog;
+    private ItemTrackAdapter trackAdapter;
 
     private OnFragmentInteractionListener mListener;
-
+    private float x1,x2;
+    static final int MIN_DISTANCE = 150;
     public SongPlayingFragment() {
         // Required empty public constructor
     }
@@ -57,101 +62,57 @@ public class SongPlayingFragment extends Fragment implements OnActionClickedList
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+
+
         View root = inflater.inflate( R.layout.fragment_song_playing, container, false );
 
-        final InteractivePlayerView mInteractivePlayerView = root.findViewById(R.id.interactivePlayerView);
-        mInteractivePlayerView.setMax(60);
-        mInteractivePlayerView.setProgress(0);
-        mInteractivePlayerView.setOnActionClickedListener(this);
-        String url = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3"; // your URL here
+//init mediaplayer
+        mediaPlayer = new MediaPlayer();
+        progressDialog = new ProgressDialog(getActivity());
+
         mediaPlayer.setAudioStreamType( AudioManager.STREAM_MUSIC);
-        try {
-            mediaPlayer.setDataSource(url);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            mediaPlayer.prepare(); // might take long! (for buffering, etc)
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        final ImageView imageView = (ImageView) root.findViewById(R.id.control);
-        imageView.setOnClickListener(new View.OnClickListener() {
+        //recycler View
+        trackAdapter = new ItemTrackAdapter(this, mediaPlayer, progressDialog);
+        RecyclerView musicRecyclerView = root.findViewById( R.id.musicRecyclerView );
+        musicRecyclerView.setAdapter( trackAdapter );
+        musicRecyclerView.setLayoutManager( new LinearLayoutManager( getActivity() ) );
+//
+        root.setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
             @Override
-            public void onClick(View view) {
-                if (!mInteractivePlayerView.isPlaying()) {
-                    if(mediaPlayer==null) {
-                        mInteractivePlayerView.start();
-                        mediaPlayer.start();
-                        imageView.setBackgroundResource(R.drawable.ic_action_pause);
-                    }
-                    if(!mediaPlayer.isPlaying()){
-                        mInteractivePlayerView.start();
-                        mediaPlayer.seekTo(pauseCurrentPosition);
-                        mediaPlayer.start();
-                        imageView.setBackgroundResource(R.drawable.ic_action_pause);
-
-                    }
-                } else {
-                    mInteractivePlayerView.stop();
-                    mediaPlayer.pause();
-                    pauseCurrentPosition=mediaPlayer.getCurrentPosition();
-                    imageView.setBackgroundResource(R.drawable.ic_action_play);
-                }
+            public void onSwipeLeft() {
+                onBackPressed();
+                Log.d("Test swipe","Swipe left");
             }
-        });
+            @Override
+            public void onSwipeRight() {
+                onBackPressed();
+                Log.d("Test swipe","Swipe right");
+
+            }
+
+            });
+
         return root;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction( uri );
+    public void onPause() {
+        super.onPause();
+
+        if (mediaPlayer != null) {
+            mediaPlayer.reset();
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
     }
 
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach( context );
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException( context.toString()
-//                    + " must implement OnFragmentInteractionListener" );
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
 
-    @Override
-    public void onActionClicked(int id) {
-        switch (id) {
-            case 1:
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            default:
-                break;
-        }
+    public void onBackPressed()
+    {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        fm.popBackStack();
     }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

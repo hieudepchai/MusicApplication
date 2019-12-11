@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 
 repositories {
+    google()
+    jcenter()
     mavenCentral()
      maven {
          url "https://jitpack.io"
@@ -25,6 +27,7 @@ android {
         }
     }
 }
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
