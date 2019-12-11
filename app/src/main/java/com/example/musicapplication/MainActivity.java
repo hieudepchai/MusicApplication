@@ -37,20 +37,46 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: ------------------------------------------------------");
         RetrofitInterface retrofit_interface = RetrofitService.getService();
         Call<List<Song>> callSong = retrofit_interface.getSong();
+        final Call<List<Singer>> callSinger = retrofit_interface.getSinger();
+        final Call<List<Genre>> callGenre = retrofit_interface.getGenre();
         callSong.enqueue(new Callback<List<Song>>() {
             @Override
-            public void onResponse(Call<List<Song>> call, Response<List<Song>> response) {
-                List<Song> receivedListSong = response.body();
-                listSong = receivedListSong;
-                Log.d("listSong: ", String.valueOf(receivedListSong.size()));
-                loadUI();
+            public void onResponse(Call<List<Song>> call, Response<List<Song>> response){
+                listSong = response.body();;
+                Log.d("listSong: ", String.valueOf(listSong.size()));
+                callSinger.enqueue(new Callback<List<Singer>>() {
+                    @Override
+                    public void onResponse(Call<List<Singer>> call, Response<List<Singer>> response) {
+                        listSinger = response.body();
+                        Log.d("listSinger: ", String.valueOf(listSinger.size()));
+                         callGenre.enqueue(new Callback<List<Genre>>() {
+                             @Override
+                             public void onResponse(Call<List<Genre>> call, Response<List<Genre>> response) {
+                                listGenre = response.body();
+                                 Log.d("listGenre: ", String.valueOf(listGenre.size()));
+                                 loadUI();
+                             }
+
+                             @Override
+                             public void onFailure(Call<List<Genre>> call, Throwable t) {
+
+                             }
+                         });
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Singer>> call, Throwable t) {
+
+                    }
+                });
             }
 
             @Override
             public void onFailure(Call<List<Song>> call, Throwable t) {
-//                loadUI();
+
             }
         });
+
 
     }
 
