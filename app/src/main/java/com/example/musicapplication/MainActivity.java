@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private int pauseCurrentPosition;
     private int position;
 
+    private ImageView playStop;
+
     public MainActivity() {
         mediaPlayer = new MediaPlayer();
 
@@ -145,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
     private void mainPlayerNextPlayBack(){
         ImageView moveNext = findViewById( R.id.mainPlayerSkipNext );
         ImageView moveBack = findViewById( R.id.mainPlayerPrevBack );
-        final ImageView playStop = findViewById( R.id.mainPlayerPlay );
+        playStop = findViewById( R.id.mainPlayerPlay );
 
         moveNext.setOnClickListener( new View.OnClickListener(){
             @Override
@@ -153,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
                 if(position < listSong.size())
                 {
                     position += 1;
+                    mediaPlayer.reset();
                     mainPlayerSetup();
 
                     playStop.setBackgroundResource( R.drawable.ic_pause_black_24dp );
@@ -169,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 if(position > 0)
                 {
                     position -= 1;
+                    mediaPlayer.reset();
                     mainPlayerSetup();
 
                     playStop.setBackgroundResource( R.drawable.ic_pause_black_24dp );
@@ -220,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
         progressDialog = new ProgressDialog( MainActivity.this );
-        position = 192;
+        position = 3;
         mainPlayerSetup();
         mainPlayerNextPlayBack();
     }
@@ -265,14 +269,21 @@ public class MainActivity extends AppCompatActivity {
             Boolean prepared = false;
 
             try {
+                if(mediaPlayer != null){
+                    Log.e(TAG, "media player: change music--======---------------");
+                    //mediaPlayer.stop();
+                    //mediaPlayer.reset();
+                }
                 mediaPlayer.setDataSource(strings[0]);
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mediaPlayer) {
                         //initialStage = true;
+                        Log.e(TAG, "media player: reset---------------");
                         playPause = true;
                         mediaPlayer.stop();
                         mediaPlayer.reset();
+                        playStop.setBackgroundResource( R.drawable.ic_play_arrow_black_24dp );
                     }
                 });
                 mediaPlayer.prepare();
@@ -294,7 +305,8 @@ public class MainActivity extends AppCompatActivity {
                 progressDialog.cancel();
 
             }
-            mediaPlayer.start();
+            if(initialStage == false)
+                mediaPlayer.start();
             initialStage = false;
         }
 
