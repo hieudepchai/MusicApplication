@@ -48,7 +48,7 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
         final Song songItem = songList.get(i);
         Log.d(TAG, "position: " + i);
 
-        new DownloadImageTask(itemHolder.art).execute(songItem.getThumbnail());
+        new MainActivity.DownloadImageTask(itemHolder.art).execute(songItem.getThumbnail());
         itemHolder.title.setText( songItem.getName() );
 
         TextView mAuthor = itemHolder.author;
@@ -101,27 +101,4 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
         }
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
-    }
 }
