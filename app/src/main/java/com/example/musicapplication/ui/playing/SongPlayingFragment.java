@@ -22,8 +22,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicapplication.MainActivity;
 import com.example.musicapplication.R;
+import com.example.musicapplication.model.Song;
 
 import java.security.Key;
+import java.util.List;
 
 import co.mobiwise.library.OnActionClickedListener;
 
@@ -37,17 +39,22 @@ public class SongPlayingFragment extends Fragment {
     private boolean playPause;
     private ProgressDialog progressDialog;
     private ItemTrackAdapter trackAdapter;
+    private Song playingSong;
+    private List<Song> latestSong;
 
     private OnFragmentInteractionListener mListener;
     private float x1,x2;
     static final int MIN_DISTANCE = 150;
-    public SongPlayingFragment() {
+    public SongPlayingFragment(Song playingSong, List<Song> latestSong) {
         // Required empty public constructor
+        this.playingSong = playingSong;
+        this.latestSong = latestSong;
     }
 
-    public static SongPlayingFragment newInstance() {
-        SongPlayingFragment fragment = new SongPlayingFragment();
+    public static SongPlayingFragment newInstance(Song playingSong, List<Song> latestSong) {
+        SongPlayingFragment fragment = new SongPlayingFragment(playingSong, latestSong);
         Bundle args = new Bundle();
+
         fragment.setArguments( args );
         return fragment;
     }
@@ -74,7 +81,7 @@ public class SongPlayingFragment extends Fragment {
         mediaPlayer.setAudioStreamType( AudioManager.STREAM_MUSIC);
 
         //recycler View
-        trackAdapter = new ItemTrackAdapter(this, mediaPlayer, progressDialog);
+        trackAdapter = new ItemTrackAdapter(this, mediaPlayer, progressDialog, playingSong, latestSong);
         RecyclerView musicRecyclerView = root.findViewById( R.id.musicRecyclerView );
         musicRecyclerView.setAdapter( trackAdapter );
         musicRecyclerView.setLayoutManager( new LinearLayoutManager( getActivity() ) );
