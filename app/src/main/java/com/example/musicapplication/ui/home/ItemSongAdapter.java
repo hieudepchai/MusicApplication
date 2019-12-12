@@ -1,5 +1,6 @@
 package com.example.musicapplication.ui.home;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,15 +17,18 @@ import com.example.musicapplication.MainActivity;
 import com.example.musicapplication.R;
 import com.example.musicapplication.model.Song;
 import com.example.musicapplication.ui.library.LibraryFragment;
+import com.example.musicapplication.ui.playing.ItemTrackAdapter;
 import com.example.musicapplication.ui.playing.SongPlayingFragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHolder> {
     private static final String TAG = "Item Adapter";
     private Context mContext;
     private List<Song> songList;
+    private HashMap<Song, List<Song>> listPlaying;
 
     public ItemSongAdapter(Context mContext, List<Song> listSong){
         this.mContext = mContext;
@@ -82,7 +86,7 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
         View view_over;
         protected View root;
         protected Song playingSong;
-        private List<Song> latestSong;
+        private List<Song> lastestSong;
         MainActivity main = (MainActivity) mContext;
 
         public ItemHolder(@NonNull View itemView) {
@@ -95,16 +99,16 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
             view_over.setOnClickListener(this);
             //view_over.setOnTouchListener(this);
 
-            latestSong = main.getLastestSong();
+            lastestSong = main.getLastestSong();
         }
 
         @Override
         public void onClick(View v) {
-            //TODO: transfer playing song and latest song to playing UI
             Log.d(TAG, "song click----------------");
-            main.goToFragment( SongPlayingFragment.newInstance());
+            main.goToFragment( SongPlayingFragment.newInstance(playingSong, lastestSong));
         }
     }
+
 
 //    private static class PlaylistBitmapLoader extends AsyncTask<Void,Void, Bitmap> {
 //        private ItemSongAdapter mAdapter;

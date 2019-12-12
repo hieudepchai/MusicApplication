@@ -44,16 +44,19 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     int pauseCurrentPosition;
     private ProgressDialog progressDialog;
     long timer;
+    private List<Song> latestSong;
+    private Song playingSong;
     String url = "https://server.hoangbk.com/api/zingmp3/download?id=ZWA86FZB&type=320";
 
     private List<Song> songList = new ArrayList<>();
 
-    public ItemTrackAdapter(SongPlayingFragment mContext, MediaPlayer mediaPlayer, ProgressDialog progressDialog){
+    public ItemTrackAdapter(SongPlayingFragment mContext, MediaPlayer mediaPlayer, ProgressDialog progressDialog, Song playing, List<Song> listLatest){
         this.mContext = mContext;
         this.mediaPlayer = mediaPlayer;
         this.progressDialog = progressDialog;
+        this.playingSong = playing;
+        this.latestSong = listLatest;
     }
-
 
     public int getItemViewType(int position)
     {
@@ -90,26 +93,27 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if(holder.getItemViewType()== USER_ACTIVITY_LAYOUT)
         {
             MusicPlayingHolder userActivityViewHolder = (MusicPlayingHolder)holder;
-            userActivityViewHolder.title.setText("Song name");
-            userActivityViewHolder.artist.setText("Artist");
-            userActivityViewHolder.background.setImageResource(R.drawable.one_direction_blur);
+            userActivityViewHolder.title.setText((playingSong.getName()));
+            if(playingSong.getComposers().size() > 0){
+            userActivityViewHolder.artist.setText(playingSong.getComposers().get(0).getName());}
+            userActivityViewHolder.background.setImageResource(R.drawable.background);
             userActivityViewHolder.mInteractivePlayerView.setMax(60);
             userActivityViewHolder.mInteractivePlayerView.setProgress(0);
             userActivityViewHolder.mInteractivePlayerView.setOnActionClickedListener(this);
-
         }
         else {
-
+            Song songItem = latestSong.get(position - 1);
             MusicItemHolder musicViewHolder = (MusicItemHolder)holder;
-            musicViewHolder.songName.setText("Song name");
-            musicViewHolder.artist.setText("Artist");
+            musicViewHolder.songName.setText(songItem.getName());
+            if (songItem.getComposers().size() > 0)
+                musicViewHolder.artist.setText(songItem.getComposers().get(0).getName());
         }
 
     }
 
     @Override
     public int getItemCount() {
-        return 7;
+        return latestSong.size() + 1;
     }
 
     @Override
@@ -136,6 +140,7 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private InteractivePlayerView mInteractivePlayerView;
         private ImageView control;
         private ImageView back_button;
+        InteractivePlayerView imagecv;
         protected View control_cover;
 
         public MusicPlayingHolder(View itemView) {
@@ -163,7 +168,7 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             if (!playPause) {
 
                 if (initialStage) {
-                    new Player().execute(url);
+                    new Player().execute(playingSong.getDownloadurl());
 
                 } else {
                     if (!mediaPlayer.isPlaying()){
