@@ -1,15 +1,11 @@
 package com.example.musicapplication.ui.home;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,11 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.musicapplication.MainActivity;
 import com.example.musicapplication.R;
 import com.example.musicapplication.model.Song;
-import com.example.musicapplication.ui.library.LibraryFragment;
 import com.example.musicapplication.ui.playing.SongPlayingFragment;
 
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHolder> {

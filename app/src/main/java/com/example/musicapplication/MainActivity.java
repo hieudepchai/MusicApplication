@@ -1,12 +1,16 @@
 package com.example.musicapplication;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -37,6 +41,18 @@ public class MainActivity extends AppCompatActivity {
     private static List<Singer> listSinger;
     private static List<Genre> listGenre;
     private static List<Composer> listComposer;
+    private boolean playPause = true;
+    private boolean initialStage = true;
+    private MediaPlayer mediaPlayer;
+    private ProgressDialog progressDialog;
+    private int pauseCurrentPosition;
+    private int position;
+
+    public MainActivity() {
+        mediaPlayer = new MediaPlayer();
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,8 +122,89 @@ public class MainActivity extends AppCompatActivity {
         return latestSong;
     }
 
-    private void mainPlayerSetUp(){
+    private void mainPlayerSetup(){
+        final Song songItem = listSong.get(position);
 
+        new DownloadImageTask( (ImageView) findViewById( R.id.mainPlayerImg ) ).execute( songItem.getThumbnail() );
+        TextView mainPlayerName = findViewById( R.id.mainPlayerName );
+        mainPlayerName.setText(songItem.getName());
+        String singers = "";
+        for(int j=0; j<songItem.getSingers().size(); j++){
+            if(j == songItem.getSingers().size()-1){
+                singers += songItem.getSingers().get(j).getName();
+                break;
+            }
+            singers += songItem.getSingers().get(j).getName() + ", ";
+        }
+        TextView mainPlayerSinger = findViewById( R.id.mainPlayerSinger );
+        mainPlayerSinger.setText( singers );
+        new downloadMusicTask().execute(songItem.getDownloadurl());
+
+    }
+
+    private void mainPlayerNextPlayBack(){
+        ImageView moveNext = findViewById( R.id.mainPlayerSkipNext );
+        ImageView moveBack = findViewById( R.id.mainPlayerPrevBack );
+        final ImageView playStop = findViewById( R.id.mainPlayerPlay );
+
+        moveNext.setOnClickListener( new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if(position < listSong.size())
+                {
+                    position += 1;
+                    mainPlayerSetup();
+
+                    playStop.setBackgroundResource( R.drawable.ic_pause_black_24dp );
+                    //mediaPlayer.start();
+
+                    playPause = false;
+                }
+
+            }
+        } );
+        moveBack.setOnClickListener( new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if(position > 0)
+                {
+                    position -= 1;
+                    mainPlayerSetup();
+
+                    playStop.setBackgroundResource( R.drawable.ic_pause_black_24dp );
+                    //mediaPlayer.start();
+
+                    playPause = false;
+                }
+
+            }
+        } );
+
+        playStop.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(playPause){
+                    playStop.setBackgroundResource( R.drawable.ic_pause_black_24dp );
+                    if (!mediaPlayer.isPlaying()){
+                        mediaPlayer.seekTo(pauseCurrentPosition);
+                        mediaPlayer.start();
+                    }
+
+                    if(mediaPlayer==null) {
+                        mediaPlayer.start();
+                    }
+                    playPause = false;
+
+                }else{
+                    playStop.setBackgroundResource( R.drawable.ic_play_arrow_black_24dp );
+                    if (mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                        pauseCurrentPosition=mediaPlayer.getCurrentPosition();
+                    }
+                    playPause = true;
+                }
+            }
+        } );
     }
 
     public void loadUI(){
@@ -122,6 +219,10 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
+        progressDialog = new ProgressDialog( MainActivity.this );
+        position = 192;
+        mainPlayerSetup();
+        mainPlayerNextPlayBack();
     }
     public void goToFragment(Fragment fragment) {
 
@@ -155,6 +256,59 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
         }
+    }
+
+    public class downloadMusicTask extends AsyncTask<String, Void, Boolean>{
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            Boolean prepared = false;
+
+            try {
+                mediaPlayer.setDataSource(strings[0]);
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mediaPlayer) {
+                        //initialStage = true;
+                        playPause = true;
+                        mediaPlayer.stop();
+                        mediaPlayer.reset();
+                    }
+                });
+                mediaPlayer.prepare();
+                prepared = true;
+
+
+            } catch (Exception e) {
+                Log.e(TAG, "download music error: " + e.getMessage());
+                prepared = false;
+            }
+
+            return prepared;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            if (progressDialog.isShowing()) {
+                progressDialog.cancel();
+
+            }
+            mediaPlayer.start();
+            initialStage = false;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog.setMessage("Loading...");
+            progressDialog.show();
+        }
+    }
+
+    public void setMediaPlayer(MediaPlayer mediaPlayer) {
+        this.mediaPlayer = mediaPlayer;
     }
 
     @Override
