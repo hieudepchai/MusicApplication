@@ -21,7 +21,8 @@
 
     <TextView
         android:id="@+id/musicTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="280dp"
+        android:gravity="center"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/back_button"
@@ -59,23 +60,6 @@
             app:unselectedAction1="@drawable/shuffle_unselected"
             app:unselectedAction2="@drawable/like_unselected"
             app:unselectedAction3="@drawable/replay_unselected" />
-
-        <ImageView
-            android:layout_width="33dp"
-            android:layout_height="33dp"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@+id/interactivePlayerView"
-            android:background="@android:drawable/ic_media_next" />
-
-        <ImageView
-            android:layout_width="33dp"
-            android:layout_height="33dp"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@+id/interactivePlayerView"
-            android:background="@android:drawable/ic_media_previous" />
-
 
     </RelativeLayout>
 
