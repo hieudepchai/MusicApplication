@@ -11,15 +11,6 @@
         android:background="@drawable/one_direction_blur"
         android:scaleType="centerCrop" />
 
-
-    <TextView
-        android:id="@+id/musicTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="Music Title"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp" />
     <ImageView
         android:id="@+id/back_button"
         android:layout_width="35dp"
@@ -27,6 +18,16 @@
         android:background="@drawable/button_back"
         android:scaleType="centerCrop"
         />
+
+    <TextView
+        android:id="@+id/musicTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/back_button"
+        android:text="Music Title"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/musicArtistName"
@@ -82,7 +83,7 @@
         android:id="@+id/latestAddedSongs"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
-        android:layout_below="@+id/player"
+        android:layout_below="@+id/background"
         android:background="#262626">
 
         <TextView

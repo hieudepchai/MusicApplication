@@ -70,7 +70,7 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
         View view_over;
         protected View root;
         protected Song playingSong;
-        private List<Song> latestSong;
+        private List<Song> lastestSong;
         MainActivity main = (MainActivity) mContext;
 
         public ItemHolder(@NonNull View itemView) {
@@ -83,14 +83,13 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
             view_over.setOnClickListener(this);
             //view_over.setOnTouchListener(this);
 
-            latestSong = main.getLastestSong();
+            lastestSong = main.getLastestSong();
         }
 
         @Override
         public void onClick(View v) {
-            //TODO: transfer playing song and latest song to playing UI
             Log.d(TAG, "song click----------------");
-            main.goToFragment( SongPlayingFragment.newInstance());
+            main.goToFragment( SongPlayingFragment.newInstance(playingSong, lastestSong));
         }
     }
 
