@@ -25,14 +25,12 @@ import com.example.musicapplication.ui.playing.SongPlayingFragment;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHolder> {
     private static final String TAG = "Item Adapter";
     private Context mContext;
     private List<Song> songList;
-    private HashMap<Song, List<Song>> listPlaying;
 
     public ItemSongAdapter(Context mContext, List<Song> listSong){
         this.mContext = mContext;
