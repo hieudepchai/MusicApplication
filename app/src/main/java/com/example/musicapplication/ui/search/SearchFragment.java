@@ -1,6 +1,7 @@
 package com.example.musicapplication.ui.search;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +13,19 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.musicapplication.MainActivity;
 import com.example.musicapplication.R;
+import com.example.musicapplication.model.Song;
+
+import java.util.List;
 
 public class SearchFragment extends Fragment {
     private SearchViewModel searchViewModel;
-
+    private MainActivity mainActivity  =  (MainActivity) getActivity();
+    private List<Song> listSong = mainActivity.getListSong();
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        searchViewModel =
-                ViewModelProviders.of(this).get(SearchViewModel.class);
+        searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
         View root = inflater.inflate(R.layout.fragment_search, container, false);
         final TextView textView = root.findViewById(R.id.text_search);
         searchViewModel.getText().observe(this, new Observer<String>() {
@@ -29,6 +34,8 @@ public class SearchFragment extends Fragment {
                 textView.setText(s);
             }
         });
+        Log.d("listSong: ", String.valueOf(listSong.size()));
         return root;
     }
+
 }

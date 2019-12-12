@@ -18,28 +18,28 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.musicapplication.MainActivity;
 import com.example.musicapplication.R;
+import com.example.musicapplication.model.Genre;
+import com.example.musicapplication.model.Song;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class HomeFragment extends Fragment {
-
-    private HomeViewModel homeViewModel;
+    private HashMap<String, List<Song>> songGenreMap;
+    private MainActivity mainActivity = (MainActivity) getActivity();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         Log.d("HomeFragment", "onCreateView: run");
 
-//        homeViewModel =
-//                ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-//        final TextView textView = root.findViewById(R.id.text_home);
-//        homeViewModel.getText().observe(this, new Observer<String>() {
-//            @Override
-//            public void onChanged(@Nullable String s) {
-//                textView.setText(s);
-//            }
-//        });
 
-        PieceSongAdapter pieceSongAdapter = new PieceSongAdapter(getActivity());
+        songGenreMap = divideListSong( mainActivity.getListSong(), mainActivity.getListGenre() );
+
+        PieceSongAdapter pieceSongAdapter = new PieceSongAdapter(getActivity(), songGenreMap, mainActivity.getListGenre());
         RecyclerView pieceItem = root.findViewById( R.id.recycler_view1 );
         pieceItem.setAdapter( pieceSongAdapter );
         pieceItem.setLayoutManager( new LinearLayoutManager( getActivity() ) );
@@ -59,11 +59,19 @@ public class HomeFragment extends Fragment {
 //        } );
     }
 
-//    private void runFadeInAnimation() {
-//        Animation a = AnimationUtils.loadAnimation(this, R.animator.fade_in);
-//        a.reset();
-//        LinearLayout ll = (LinearLayout) findViewById(R.id.yourviewhere);
-//        ll.clearAnimation();
-//        ll.startAnimation(a);
-//    }
+    public HashMap<String, List<Song>> divideListSong(List<Song> listSong, List<Genre> listGenre){
+        HashMap<String, List<Song>> genreSong = new HashMap<>(  );
+        for(int i = 0; i<listGenre.size(); i++){
+            List<Song> listSongGenre = new ArrayList<>(  );
+            genreSong.put(listGenre.get(i).getName(), listSongGenre);
+        }
+
+        for(int i = 0; i<listSong.size(); i++){
+            for(int j = 0; j<listSong.get(i).getGenres().size(); j++){
+                String genre = listSong.get(i).getGenres().get( j ).getName();
+                genreSong.get(genre).add( listSong.get(i) );
+            }
+        }
+        return genreSong;
+    }
 }
