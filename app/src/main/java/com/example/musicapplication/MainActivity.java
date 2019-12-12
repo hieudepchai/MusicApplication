@@ -1,8 +1,12 @@
 package com.example.musicapplication;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -19,6 +23,7 @@ import com.example.musicapplication.service.RetrofitInterface;
 import com.example.musicapplication.service.RetrofitService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,6 +106,10 @@ public class MainActivity extends AppCompatActivity {
         return latestSong;
     }
 
+    private void mainPlayerSetUp(){
+
+    }
+
     public void loadUI(){
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
@@ -122,6 +131,30 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.nav_host_fragment, fragment) // replace flContainer
                 .addToBackStack(null)
                 .commit();
+    }
+
+    public static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
     }
 
     @Override
