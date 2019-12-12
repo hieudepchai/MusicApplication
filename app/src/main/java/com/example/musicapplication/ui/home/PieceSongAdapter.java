@@ -12,13 +12,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicapplication.R;
+import com.example.musicapplication.model.Genre;
+import com.example.musicapplication.model.Song;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class PieceSongAdapter extends RecyclerView.Adapter<PieceSongAdapter.PieceHolder> {
     private static final String TAG = "piece Adapter";
     private Context mContext;
+    private List<Genre> listGenre;
+    private HashMap<String, List<Song>> songGenreMap;
 
-    public PieceSongAdapter(Context mContext){
+    public PieceSongAdapter(Context mContext, HashMap<String, List<Song>> songGenreMap, List<Genre> listGenre){
         this.mContext = mContext;
+        this.songGenreMap = songGenreMap;
+        this.listGenre = listGenre;
     }
 
     @NonNull
@@ -30,14 +39,15 @@ public class PieceSongAdapter extends RecyclerView.Adapter<PieceSongAdapter.Piec
 
     @Override
     public void onBindViewHolder(@NonNull PieceHolder holder, int position) {
+        String genre = listGenre.get(position).getName();
         TextView pieceTitle = holder.pieceTitle;
-        pieceTitle.setText( "Relax" );
+        pieceTitle.setText( genre );
         TextView descrip = holder.descrip;
         descrip.setText( "Popular playlists from the QUAN community" );
 
         LinearLayoutManager childLayoutManager = new LinearLayoutManager( holder.songItem.getContext(), LinearLayoutManager.HORIZONTAL, false);
 
-        ItemSongAdapter songAdapter = new ItemSongAdapter(mContext);
+        ItemSongAdapter songAdapter = new ItemSongAdapter(mContext, songGenreMap.get(genre));
         RecyclerView songItem = holder.songItem;
         songItem.setAdapter( songAdapter );
         songItem.setLayoutManager( childLayoutManager );
@@ -46,7 +56,7 @@ public class PieceSongAdapter extends RecyclerView.Adapter<PieceSongAdapter.Piec
 
     @Override
     public int getItemCount() {
-        return 10;
+        return listGenre.size();
     }
 
     public class PieceHolder extends RecyclerView.ViewHolder implements View.OnClickListener{

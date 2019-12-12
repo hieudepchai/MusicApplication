@@ -19,6 +19,7 @@ import com.example.musicapplication.service.RetrofitInterface;
 import com.example.musicapplication.service.RetrofitService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -84,8 +85,20 @@ public class MainActivity extends AppCompatActivity {
         return listSong;
     }
 
+    public static List<Genre> getListGenre() {
+        return listGenre;
+    }
+
     public static void setListSong(List<Song> listSong) {
         MainActivity.listSong = listSong;
+    }
+
+    public static List<Song> getLastestSong(){ //last 20 songs
+        List<Song> latestSong = new ArrayList<>(  );
+        for(int i=listSong.size()-1; i>=listSong.size()-20; i--){
+            latestSong.add(listSong.get( i ));
+        }
+        return latestSong;
     }
 
     public void loadUI(){

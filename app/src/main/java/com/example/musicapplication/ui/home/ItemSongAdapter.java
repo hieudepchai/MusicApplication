@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,10 +24,11 @@ import java.util.List;
 public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHolder> {
     private static final String TAG = "Item Adapter";
     private Context mContext;
-    private List<Song> songList = new ArrayList<>();
+    private List<Song> songList;
 
-    public ItemSongAdapter(Context mContext){
+    public ItemSongAdapter(Context mContext, List<Song> listSong){
         this.mContext = mContext;
+        this.songList = listSong;
     }
 
     @NonNull
@@ -39,7 +41,7 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
     @Override
     public void onBindViewHolder(@NonNull ItemSongAdapter.ItemHolder itemHolder, int i) {
         // get item song ith
-        //final Song songItem = songList.get(i);
+        final Song songItem = songList.get(i);
         // tên tương ứng     itemHolder.title.setText(playlist.name);
 
         // get uri of art
@@ -54,15 +56,23 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
         ImageView mSongImage = itemHolder.art;
         mSongImage.setImageResource( R.drawable.default_image_round);
         TextView mMusicName = itemHolder.title;
-        mMusicName.setText( "a Quan dep trai ok?" );
+        mMusicName.setText( songItem.getName() );
         TextView mAuthor = itemHolder.author;
-        mAuthor.setText( "Quan Nguyen" );
-
+        String singers = "";
+        for(int j=0; j<songItem.getSingers().size(); j++){
+            if(j == songItem.getSingers().size()-1){
+                singers += songItem.getSingers().get(j).getName();
+                break;
+            }
+            singers += songItem.getSingers().get(j).getName() + ", ";
+        }
+        mAuthor.setText( singers );
+        itemHolder.playingSong = songItem;
     }
 
     @Override
     public int getItemCount() {
-        return 7;
+        return songList.size();
     }
 
     public class ItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -71,6 +81,8 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
         protected ImageView art;
         View view_over;
         protected View root;
+        protected Song playingSong;
+        private List<Song> latestSong;
         MainActivity main = (MainActivity) mContext;
 
         public ItemHolder(@NonNull View itemView) {
@@ -82,10 +94,13 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
             view_over = itemView.findViewById(R.id.song_over);
             view_over.setOnClickListener(this);
             //view_over.setOnTouchListener(this);
+
+            latestSong = main.getLastestSong();
         }
 
         @Override
         public void onClick(View v) {
+            //TODO: transfer playing song and latest song to playing UI
             Log.d(TAG, "song click----------------");
             main.goToFragment( SongPlayingFragment.newInstance());
         }
