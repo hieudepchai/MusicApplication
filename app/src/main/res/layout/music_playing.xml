@@ -7,7 +7,7 @@
     <ImageView
         android:id="@+id/background"
         android:alpha="0.995"
-        android:layout_width="480dp"
+        android:layout_width="match_parent"
         android:layout_height="450dp"
         android:background="@drawable/background1"
         android:scaleType="centerCrop" />
@@ -29,7 +29,7 @@
         android:layout_below="@+id/back_button"
         android:text="Music Title"
         android:textColor="#FFFFFF"
-        android:textSize="20sp" />
+        android:textSize="24dp" />
 
     <TextView
         android:id="@+id/musicArtistName"
@@ -39,7 +39,7 @@
         android:layout_centerHorizontal="true"
         android:text="Singer Name - Artist Here"
         android:textColor="#FFFFFF"
-        android:textSize="14sp" />
+        android:textSize="20dp" />
 
     <RelativeLayout
         android:id="@+id/player"
