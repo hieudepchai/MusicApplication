@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-
 import co.mobiwise.library.InteractivePlayerView;
 import co.mobiwise.library.OnActionClickedListener;
 
@@ -110,6 +109,7 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             if(playingSong.getComposers().size() > 0){
                 userActivityViewHolder.artist.setText(playingSong.getComposers().get(0).getName());}
             new MainActivity.DownloadImageTask(userActivityViewHolder.background).execute(playingSong.getThumbnail());
+
             userActivityViewHolder.mInteractivePlayerView.setMax(60);
             userActivityViewHolder.mInteractivePlayerView.setProgress(0);
             userActivityViewHolder.mInteractivePlayerView.setOnActionClickedListener(this);
@@ -191,11 +191,13 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                         mediaPlayer.seekTo(pauseCurrentPosition);
                         control.setBackgroundResource(R.drawable.ic_action_pause);
                         mediaPlayer.start();
+                        MediaResume(v);
                     }
 
                     if(mediaPlayer==null) {
+                        control.setBackgroundResource(R.drawable.ic_action_pause);
                         mInteractivePlayerView.start();
-                        mediaPlayer.start();
+                        MediaStart(v);
                     }
                     playPause = true;
                 }
@@ -203,9 +205,8 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 control.setBackgroundResource(R.drawable.ic_action_play);
 
                 if (mediaPlayer.isPlaying()) {
-                    mediaPlayer.pause();
                     mInteractivePlayerView.stop();
-                    pauseCurrentPosition=mediaPlayer.getCurrentPosition();
+                    MediaPause(v);
                 }
 
                 playPause = false;
@@ -291,10 +292,22 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         public void onClick(View v) {
             playingSong = NextSong;
             notifyItemChanged(0);
-            Log.e(TAG, "new latest item click");
+            mediaPlayer.reset();
+            initialStage=true;
         }
     }
+    public void MediaStart(View view){
+        mediaPlayer.start();
 
+    };
+    public void MediaResume(View view){
+        mediaPlayer.seekTo(pauseCurrentPosition);
+        mediaPlayer.start();
 
+    };
+    public void MediaPause(View view){
+        mediaPlayer.pause();
+        pauseCurrentPosition=mediaPlayer.getCurrentPosition();
 
+    };
 }
