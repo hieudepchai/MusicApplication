@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="5dp"
+    android:orientation="horizontal"
+    tools:background="@android:color/white"
+    android:layout_marginBottom="5dp">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/searchedSongImage"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/track_image"
+            android:layout_marginRight="20px"
+            android:padding="5px"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/searchedSongName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Song Name"
+            android:textSize="20dp"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+        <TextView
+            android:id="@+id/searchedSongSinger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Song Singer"
+            android:textSize="12dp"/>
+        <TextView
+            android:id="@+id/searchedSongComposer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Song Composer"
+            android:textSize="12dp"/>
+        <TextView
+            android:id="@+id/searchedSongGenre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Song Genre"
+        android:textSize="12dp"/>
+    </LinearLayout>
+
+
+</LinearLayout>

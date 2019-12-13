@@ -1,5 +1,6 @@
 package com.example.musicapplication.service;
 
+import com.example.musicapplication.model.Composer;
 import com.example.musicapplication.model.Genre;
 import com.example.musicapplication.model.Singer;
 import com.example.musicapplication.model.Song;
@@ -16,5 +17,6 @@ public interface  RetrofitInterface {
     Call<List<Singer>> getSinger();
     @GET("genre")
     Call<List<Genre>> getGenre();
-
+    @GET("composer")
+    Call<List<Composer>> getComposer();
 }

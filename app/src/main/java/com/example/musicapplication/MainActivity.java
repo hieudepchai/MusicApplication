@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         Call<List<Song>> callSong = retrofit_interface.getSong();
         final Call<List<Singer>> callSinger = retrofit_interface.getSinger();
         final Call<List<Genre>> callGenre = retrofit_interface.getGenre();
+        final Call<List<Composer>> callComposer = retrofit_interface.getComposer();
         callSong.enqueue(new Callback<List<Song>>() {
             @Override
             public void onResponse(Call<List<Song>> call, Response<List<Song>> response){
@@ -80,7 +81,19 @@ public class MainActivity extends AppCompatActivity {
                              public void onResponse(Call<List<Genre>> call, Response<List<Genre>> response) {
                                 listGenre = response.body();
                                  Log.d("listGenre: ", String.valueOf(listGenre.size()));
-                                 loadUI();
+                                 callComposer.enqueue(new Callback<List<Composer>>() {
+                                     @Override
+                                     public void onResponse(Call<List<Composer>> call, Response<List<Composer>> response) {
+                                         listComposer=response.body();
+                                         Log.d("listComposer: ", String.valueOf(listComposer.size()));
+                                         loadUI();
+                                     }
+
+                                     @Override
+                                     public void onFailure(Call<List<Composer>> call, Throwable t) {
+
+                                     }
+                                 });
                              }
 
                              @Override
@@ -112,6 +125,14 @@ public class MainActivity extends AppCompatActivity {
 
     public static List<Genre> getListGenre() {
         return listGenre;
+    }
+
+    public static List<Singer> getListSinger() {
+        return listSinger;
+    }
+
+    public static List<Composer> getListComposer() {
+        return listComposer;
     }
 
     public static void setListSong(List<Song> listSong) {
