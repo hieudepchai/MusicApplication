@@ -9,7 +9,7 @@
         android:alpha="0.995"
         android:layout_width="match_parent"
         android:layout_height="450dp"
-        android:background="@drawable/background1"
+        android:background="@drawable/background"
         android:scaleType="centerCrop" />
 
     <ImageView
