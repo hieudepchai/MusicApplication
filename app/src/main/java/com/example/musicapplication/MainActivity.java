@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private int pauseCurrentPosition;
     private int position;
+    private Song songItem;
 
     private ImageView playStop;
 
@@ -125,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void mainPlayerSetup(){
-        final Song songItem = listSong.get(position);
+        songItem = listSong.get(position);
 
         new DownloadImageTask( (ImageView) findViewById( R.id.mainPlayerImg ) ).execute( songItem.getThumbnail() );
         TextView mainPlayerName = findViewById( R.id.mainPlayerName );
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         }
         TextView mainPlayerSinger = findViewById( R.id.mainPlayerSinger );
         mainPlayerSinger.setText( singers );
-        new downloadMusicTask().execute(songItem.getDownloadurl());
+        //new downloadMusicTask().execute(songItem.getDownloadurl());
 
     }
 
@@ -157,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
                     position += 1;
                     mediaPlayer.reset();
                     mainPlayerSetup();
+                    new downloadMusicTask().execute(songItem.getDownloadurl());
 
                     playStop.setBackgroundResource( R.drawable.ic_pause_black_24dp );
                     //mediaPlayer.start();
@@ -174,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
                     position -= 1;
                     mediaPlayer.reset();
                     mainPlayerSetup();
+                    new downloadMusicTask().execute(songItem.getDownloadurl());
 
                     playStop.setBackgroundResource( R.drawable.ic_pause_black_24dp );
                     //mediaPlayer.start();
@@ -189,15 +192,19 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(playPause){
                     playStop.setBackgroundResource( R.drawable.ic_pause_black_24dp );
-                    if (!mediaPlayer.isPlaying()){
-                        mediaPlayer.seekTo(pauseCurrentPosition);
-                        mediaPlayer.start();
-                    }
+                    if(initialStage){
+                        new downloadMusicTask().execute(songItem.getDownloadurl());
+                    }else{
+                        if (!mediaPlayer.isPlaying()){
+                            mediaPlayer.seekTo(pauseCurrentPosition);
+                            mediaPlayer.start();
+                        }
 
-                    if(mediaPlayer==null) {
-                        mediaPlayer.start();
+                        if(mediaPlayer==null) {
+                            mediaPlayer.start();
+                        }
+                        playPause = false;
                     }
-                    playPause = false;
 
                 }else{
                     playStop.setBackgroundResource( R.drawable.ic_play_arrow_black_24dp );
@@ -305,8 +312,7 @@ public class MainActivity extends AppCompatActivity {
                 progressDialog.cancel();
 
             }
-            if(initialStage == false)
-                mediaPlayer.start();
+            mediaPlayer.start();
             initialStage = false;
         }
 
