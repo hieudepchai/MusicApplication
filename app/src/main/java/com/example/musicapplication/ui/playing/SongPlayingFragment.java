@@ -23,18 +23,15 @@ import java.util.List;
 
 
 public class SongPlayingFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    int pauseCurrentPosition;
+
     MediaPlayer mediaPlayer;
-    private boolean initialStage = true;
-    private boolean playPause;
     private ProgressDialog progressDialog;
     private ItemTrackAdapter trackAdapter;
     private Song playingSong;
     private List<Song> latestSong;
 
-    private OnFragmentInteractionListener mListener;
+    private MainActivity mainActivity = (MainActivity) getActivity();
+
     private float x1,x2;
     static final int MIN_DISTANCE = 150;
     public SongPlayingFragment(Song playingSong, List<Song> latestSong) {
@@ -60,19 +57,14 @@ public class SongPlayingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
-
-
         View root = inflater.inflate( R.layout.fragment_song_playing, container, false );
-
-//init mediaplayer
-        mediaPlayer = new MediaPlayer();
+        Log.e("song playing", "onCreateView");
+        //init mediaplayer
+        mediaPlayer = mainActivity.getMediaPlayer();
         progressDialog = new ProgressDialog(getActivity());
 
-        mediaPlayer.setAudioStreamType( AudioManager.STREAM_MUSIC);
-
         //recycler View
-        trackAdapter = new ItemTrackAdapter(this, mediaPlayer, progressDialog, playingSong, latestSong);
+        trackAdapter = new ItemTrackAdapter(getActivity(), this, mediaPlayer, progressDialog, playingSong, latestSong);
         RecyclerView musicRecyclerView = root.findViewById( R.id.musicRecyclerView );
         musicRecyclerView.setAdapter( trackAdapter );
         musicRecyclerView.setLayoutManager( new LinearLayoutManager( getActivity() ) );
@@ -97,14 +89,19 @@ public class SongPlayingFragment extends Fragment {
 
     public void onPause() {
         super.onPause();
+        Log.e("song playing", "onpause");
 
-        if (mediaPlayer != null) {
-            mediaPlayer.reset();
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
+//        if (mediaPlayer != null) {
+//            mediaPlayer.reset();
+//            mediaPlayer.release();
+//            mediaPlayer = null;
+//        }
     }
 
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e("song playing", "onDestroy");
+    }
 
     public void onBackPressed()
     {
@@ -115,8 +112,5 @@ public class SongPlayingFragment extends Fragment {
                 .commit();
         MainActivity.showMainPlayer();
     }
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
+
 }

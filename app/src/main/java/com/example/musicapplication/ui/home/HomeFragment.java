@@ -1,6 +1,8 @@
 package com.example.musicapplication.ui.home;
 
+import android.graphics.Point;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,12 +39,23 @@ public class HomeFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
+        //get dimension of full screen
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int screen_width = size.x;
+        final int screen_height = size.y;
+
         songGenreMap = divideListSong( mainActivity.getListSong(), mainActivity.getListGenre() );
 
         PieceSongAdapter pieceSongAdapter = new PieceSongAdapter(getActivity(), songGenreMap, mainActivity.getListGenre());
         RecyclerView pieceItem = root.findViewById( R.id.recycler_view1 );
         pieceItem.setAdapter( pieceSongAdapter );
         pieceItem.setLayoutManager( new LinearLayoutManager( getActivity() ) );
+
+        //fix size of recycler view
+        ViewGroup.LayoutParams rv_params = pieceItem.getLayoutParams();
+        rv_params.height = screen_height - 350; // 350 or 200 or 250
 
         return root;
     }

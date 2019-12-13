@@ -89,16 +89,21 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
         @Override
         public void onClick(View v) {
             Log.d(TAG, "song click----------------");
+            //check for add to recently played
+            boolean check=false;
             if(MainActivity.recentlyPlayed.size()==0)
                 MainActivity.recentlyPlayed.add(playingSong);
             else {
-                for (int i=MainActivity.recentlyPlayed.size() -1; i >= 0 ; i--) {
+                for (int i=0; i  < MainActivity.recentlyPlayed.size() ; i++) {
                     if (playingSong != MainActivity.recentlyPlayed.get(i)){
-                        MainActivity.recentlyPlayed.add(playingSong);
-                        break;
+                        check=true;
                     }
-                    else break;
+                    else {check=false;
+                            break;}
                 }
+                if(check==true)
+                    MainActivity.recentlyPlayed.add(playingSong);
+
             }
             main.uncollapseFragment( SongPlayingFragment.newInstance(playingSong, lastestSong));
         }
