@@ -27,6 +27,7 @@ import com.example.musicapplication.service.RetrofitService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private static List<Singer> listSinger;
     private static List<Genre> listGenre;
     private static List<Composer> listComposer;
+    public static List<Song> recentlyPlayed = new ArrayList<>();
     private static View mainPlayer;
     private static View navigationBar;
     private boolean playPause = true;

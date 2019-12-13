@@ -121,6 +121,7 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             if (songItem.getComposers().size() > 0)
                 musicViewHolder.artist.setText(songItem.getComposers().get(0).getName());
             musicViewHolder.NextSong = songItem;
+
             musicViewHolder.position = position-1;
             new MainActivity.DownloadImageTask(musicViewHolder.img).execute(songItem.getThumbnail());
         }
@@ -291,6 +292,14 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         @Override
         public void onClick(View v) {
             playingSong = NextSong;
+
+            for (int i=MainActivity.recentlyPlayed.size() -1; i >= 0 ; i--) {
+                if (playingSong != MainActivity.recentlyPlayed.get(i)){
+                    MainActivity.recentlyPlayed.add(playingSong);
+                    break;
+                }
+                else break;
+            }
             notifyItemChanged(0);
             mediaPlayer.reset();
             initialStage=true;

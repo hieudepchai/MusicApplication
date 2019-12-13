@@ -89,6 +89,17 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
         @Override
         public void onClick(View v) {
             Log.d(TAG, "song click----------------");
+            if(MainActivity.recentlyPlayed.size()==0)
+                MainActivity.recentlyPlayed.add(playingSong);
+            else {
+                for (int i=MainActivity.recentlyPlayed.size() -1; i >= 0 ; i--) {
+                    if (playingSong != MainActivity.recentlyPlayed.get(i)){
+                        MainActivity.recentlyPlayed.add(playingSong);
+                        break;
+                    }
+                    else break;
+                }
+            }
             main.uncollapseFragment( SongPlayingFragment.newInstance(playingSong, lastestSong));
         }
     }
