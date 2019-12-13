@@ -259,6 +259,17 @@ public class MainActivity extends AppCompatActivity {
         navigationBar.setVisibility( View.GONE );
     }
 
+    public void hideMainPlayer(){
+        mainPlayer.setVisibility( View.GONE );
+        if(!playPause){
+            playStop.setBackgroundResource( R.drawable.ic_play_arrow_black_24dp );
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                pauseCurrentPosition=mediaPlayer.getCurrentPosition();
+            }
+            playPause = true;
+        }
+    }
     public static void showMainPlayer(){
         mainPlayer.setVisibility( View.VISIBLE );
         navigationBar.setVisibility( View.VISIBLE );
