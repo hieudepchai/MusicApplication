@@ -266,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(String... strings) {
-            Boolean prepared = false;
+            Boolean prepared;
 
             try {
                 if(mediaPlayer != null){
