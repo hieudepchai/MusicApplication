@@ -145,7 +145,7 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             }else{
                 long timer1 = TimeUnit.MILLISECONDS.toSeconds(mediaPlayer.getDuration());
-                int seconds = ((positionPlaying % (1000*60*60)) % (1000*60) / 1000);
+                int seconds = ((positionPlaying % (1000*60*60)) / 1000);
                 mInteractivePlayerView.setMax( (int) timer1 );
                 mInteractivePlayerView.setProgress(seconds);
                 mInteractivePlayerView.setOnActionClickedListener(this);
