@@ -48,7 +48,7 @@ public class SearchedBySingerAdapter extends  RecyclerView.Adapter<SearchedBySin
         List<Song> foundListSong = new ArrayList<>(mapSingerSong.get(singer_name));
         holder.tvResultItem.setText(singer_name);
         holder.tvResultNumber.setText(foundListSong.size()+" song(s)");
-        SearchedSongAdapter searchedSongAdapter = new SearchedSongAdapter(foundListSong);
+        SearchedSongAdapter searchedSongAdapter = new SearchedSongAdapter(foundListSong, mContext);
         holder.rvRv2.setAdapter(searchedSongAdapter);
         LinearLayoutManager childLayoutManager = new LinearLayoutManager( holder.rvRv2.getContext(), LinearLayoutManager.VERTICAL, false);
         holder.rvRv2.setLayoutManager(childLayoutManager);
