@@ -7,15 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-
-import android.widget.SearchView;
-
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,8 +23,6 @@ import com.example.musicapplication.model.Genre;
 import com.example.musicapplication.model.Singer;
 import com.example.musicapplication.model.Song;
 
-
-
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +30,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class SearchFragment extends Fragment {
-    private SearchViewModel searchViewModel;
     private MainActivity mainActivity  =  (MainActivity) getActivity();
     private List<Song> listSong = mainActivity.getListSong();
     private List<Singer> listSinger = mainActivity.getListSinger();
@@ -50,7 +44,6 @@ public class SearchFragment extends Fragment {
     private TextView tvSearchResult;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
         final View root = inflater.inflate(R.layout.fragment_search, container, false);
         final Spinner spinnerDropdown = (Spinner) root.findViewById(R.id.spinnerSearch);
 //       init
@@ -106,7 +99,7 @@ public class SearchFragment extends Fragment {
 //                set height recycler view
                 int searchview_height = searchView.getHeight();
                 ViewGroup.LayoutParams rv_params = rvSearchResult.getLayoutParams();
-                rv_params.height = screen_height -searchview_height-224;
+                rv_params.height = screen_height -searchview_height-420;
                 rvSearchResult.setLayoutParams(rv_params);
                 rvSearchResult2.setLayoutParams(rv_params);
                 String type = spinnerDropdown.getSelectedItem().toString();
@@ -144,7 +137,7 @@ public class SearchFragment extends Fragment {
 
 //                        input recycler view
                         if (type_song_result.size() > 0){
-                            SearchedSongAdapter searchedSongAdapter = new SearchedSongAdapter(new ArrayList<Song>(type_song_result));
+                            SearchedSongAdapter searchedSongAdapter = new SearchedSongAdapter(new ArrayList<Song>(type_song_result), getActivity());
                             rvSearchResult.setAdapter(searchedSongAdapter);
                             rvSearchResult.setLayoutManager(new LinearLayoutManager(getActivity()));
                         }

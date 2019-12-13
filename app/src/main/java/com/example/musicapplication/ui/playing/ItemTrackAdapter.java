@@ -41,10 +41,11 @@ import co.mobiwise.library.OnActionClickedListener;
 
 public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements OnActionClickedListener {
     private static final String TAG = "Item Adapter";
-    private static SongPlayingFragment mContext=null;
+    private Context mContext;
+    private SongPlayingFragment songPlayingFragment;
     private static final int USER_ACTIVITY_LAYOUT= 0;
     private static final int MUSIC_ITEM_LAYOUT= 1;
-    MediaPlayer mediaPlayer;
+    private static MediaPlayer mediaPlayer;
     private boolean initialStage = true;
     private boolean playPause;
     int pauseCurrentPosition;
@@ -52,16 +53,28 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     long timer;
     private List<Song> latestSong;
     private Song playingSong;
+
+    private InteractivePlayerView mInteractivePlayerView;
+    private ImageView control;
+
+    private static int positionPlaying;
+    private static boolean isMainPlayer = false;
+
+    private boolean isFirstLoad = true;
+
     String url = "https://server.hoangbk.com/api/zingmp3/download?id=ZWA86FZB&type=320";
 
     private List<Song> songList = new ArrayList<>();
 
-    public ItemTrackAdapter(SongPlayingFragment mContext, MediaPlayer mediaPlayer, ProgressDialog progressDialog, Song playing, List<Song> listLatest){
+    public ItemTrackAdapter(Context mContext, SongPlayingFragment songPlayingFragment, MediaPlayer mediaPlayer, ProgressDialog progressDialog, Song playing, List<Song> listLatest){
         this.mContext = mContext;
+        this.songPlayingFragment = songPlayingFragment;
         this.mediaPlayer = mediaPlayer;
         this.progressDialog = progressDialog;
         this.playingSong = playing;
         this.latestSong = listLatest;
+        this.playPause = MainActivity.isPlayPause();
+        this.initialStage = MainActivity.isInitialStage();
     }
 
     public int getItemViewType(int position)
@@ -72,8 +85,16 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             return MUSIC_ITEM_LAYOUT;
     }
 
-    private void musicPlayingSetup(Song playingSong){
+    public static void setMediaPlayer(MediaPlayer mediaPlayer) {
+        ItemTrackAdapter.mediaPlayer = mediaPlayer;
+    }
 
+    public static void setPositionPlaying(int positionPlaying) {
+        ItemTrackAdapter.positionPlaying = positionPlaying;
+    }
+
+    public static void setIsMainPlayer(boolean isMainPlayer) {
+        ItemTrackAdapter.isMainPlayer = isMainPlayer;
     }
 
     @NonNull
@@ -100,21 +121,44 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-
-        if(holder.getItemViewType()== USER_ACTIVITY_LAYOUT)
+        Log.e(TAG, "----------------error1==----------");
+        if(holder.getItemViewType()== USER_ACTIVITY_LAYOUT && isFirstLoad)
         {
+            isFirstLoad = false;
             MusicPlayingHolder userActivityViewHolder = (MusicPlayingHolder)holder;
-            userActivityViewHolder.mInteractivePlayerView.setCoverURL(playingSong.getThumbnail());
+            mInteractivePlayerView.setCoverURL(playingSong.getThumbnail());
             userActivityViewHolder.title.setText((playingSong.getName()));
             if(playingSong.getComposers().size() > 0){
                 userActivityViewHolder.artist.setText(playingSong.getComposers().get(0).getName());}
             new MainActivity.DownloadImageTask(userActivityViewHolder.background).execute(playingSong.getThumbnail());
 
-            userActivityViewHolder.mInteractivePlayerView.setMax(60);
-            userActivityViewHolder.mInteractivePlayerView.setProgress(0);
-            userActivityViewHolder.mInteractivePlayerView.setOnActionClickedListener(this);
+            if(!isMainPlayer){
+                Log.e(TAG, "----------------error----------");
+                mInteractivePlayerView.setMax(60);
+                mInteractivePlayerView.setProgress(0);
+                mInteractivePlayerView.setOnActionClickedListener(this);
+
+                if(!initialStage){
+                    mediaPlayer.reset();
+                    new Player().execute(playingSong.getDownloadurl());
+                }
+
+            }else{
+                long timer1 = TimeUnit.MILLISECONDS.toSeconds(mediaPlayer.getDuration());
+                int seconds = ((positionPlaying % (1000*60*60)) % (1000*60) / 1000);
+                mInteractivePlayerView.setMax( (int) timer1 );
+                mInteractivePlayerView.setProgress(seconds);
+                mInteractivePlayerView.setOnActionClickedListener(this);
+                pauseCurrentPosition = positionPlaying;
+                if(!playPause){
+                    mInteractivePlayerView.start();
+                    control.setBackgroundResource(R.drawable.ic_action_pause);
+                }
+                isMainPlayer = false;
+            }
+
         }
-        else {
+        else if(holder.getItemViewType()== MUSIC_ITEM_LAYOUT) {
             Song songItem = latestSong.get(position - 1);
             MusicItemHolder musicViewHolder = (MusicItemHolder)holder;
             musicViewHolder.songName.setText(songItem.getName());
@@ -153,8 +197,8 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private TextView artist;
         private TextView time;
         private ImageView background;
-        private InteractivePlayerView mInteractivePlayerView;
-        private ImageView control;
+        private MainActivity mainActivity = (MainActivity) mContext;
+
         private ImageView back_button;
         protected View control_cover;
 
@@ -171,8 +215,19 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             back_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    songPlayingFragment.onBackPressed();
 
-                    mContext.onBackPressed();
+                    if(playPause){
+                        mainActivity.setPauseCurrentPosition( pauseCurrentPosition );
+                        MainActivity.setPlayPause( false );
+                    }else{
+                        MainActivity.setPlayPause( true );
+                    }
+
+                    MainActivity.setMediaPlayer( mediaPlayer );
+                    mainActivity.mainPlayerSong( playingSong );
+                    mainActivity.setPosition( playingSong.getId() - 1 );
+
                 }
             });
         }
@@ -180,12 +235,10 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         @Override
         public void onClick(View v) {
 
-            if (!playPause) {
-
-                if (initialStage) {
+            if (playPause) {
+                if(initialStage){
                     new Player().execute(playingSong.getDownloadurl());
-
-                } else {
+                }else{
                     if (!mediaPlayer.isPlaying()){
                         mInteractivePlayerView.start();
                         mediaPlayer.seekTo(pauseCurrentPosition);
@@ -199,8 +252,8 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                         mInteractivePlayerView.start();
                         MediaStart(v);
                     }
-                    playPause = true;
                 }
+                playPause = false;
             } else {
                 control.setBackgroundResource(R.drawable.ic_action_play);
 
@@ -209,63 +262,11 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     MediaPause(v);
                 }
 
-                playPause = false;
+                playPause = true;
             }
         }
 
-        class Player extends AsyncTask<String, Void, Boolean> {
-            @Override
-            protected Boolean doInBackground(String... strings) {
-                Boolean prepared = false;
 
-                try {
-                    mediaPlayer.setDataSource(strings[0]);
-                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mediaPlayer) {
-                            initialStage = true;
-                            playPause = false;
-                            mediaPlayer.stop();
-                            mediaPlayer.reset();
-                        }
-                    });
-                    mediaPlayer.prepare();
-                    prepared = true;
-                    timer = TimeUnit.MILLISECONDS.toSeconds(mediaPlayer.getDuration());
-
-
-                } catch (Exception e) {
-                    Log.e("MyAudioStreamingApp", e.getMessage());
-                    prepared = false;
-                }
-
-                return prepared;
-            }
-
-            @Override
-            protected void onPostExecute(Boolean aBoolean) {
-                super.onPostExecute(aBoolean);
-
-                if (progressDialog.isShowing()) {
-                    progressDialog.cancel();
-                    mInteractivePlayerView.setMax((int)timer);
-                    mInteractivePlayerView.start();
-                    control.setBackgroundResource(R.drawable.ic_action_pause);
-
-                }
-
-                mediaPlayer.start();
-                initialStage = false;
-            }
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-
-                progressDialog.setMessage("Loading...");
-                progressDialog.show();
-            }
-        }
     }
 
     public class MusicItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -293,7 +294,7 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             playingSong = NextSong;
             notifyItemChanged(0);
             mediaPlayer.reset();
-            initialStage=true;
+            isFirstLoad = true;
         }
     }
     public void MediaStart(View view){
@@ -310,4 +311,60 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         pauseCurrentPosition=mediaPlayer.getCurrentPosition();
 
     };
+
+    class Player extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            Boolean prepared = false;
+
+            try {
+                mediaPlayer.setDataSource(strings[0]);
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mediaPlayer) {
+                        initialStage = true;
+                        playPause = false;
+                        mediaPlayer.stop();
+                        mediaPlayer.reset();
+                    }
+                });
+
+                mediaPlayer.prepare();
+                prepared = true;
+                timer = TimeUnit.MILLISECONDS.toSeconds(mediaPlayer.getDuration());
+
+
+            } catch (Exception e) {
+                Log.e("MyAudioStreamingApp", e.getMessage());
+                prepared = false;
+            }
+
+            return prepared;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+
+            if (progressDialog.isShowing()) {
+                progressDialog.cancel();
+                mInteractivePlayerView.setMax((int)timer);
+                mInteractivePlayerView.start();
+                control.setBackgroundResource(R.drawable.ic_action_pause);
+
+            }
+            mediaPlayer.start();
+            playPause = false;
+            initialStage = false;
+            MainActivity.setInitialStage(false);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog.setMessage("Loading...");
+            progressDialog.show();
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.musicapplication.ui.search;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.example.musicapplication.model.Composer;
 import com.example.musicapplication.model.Genre;
 import com.example.musicapplication.model.Singer;
 import com.example.musicapplication.model.Song;
+import com.example.musicapplication.ui.playing.SongPlayingFragment;
 
 import java.util.List;
 
@@ -77,6 +79,8 @@ public class SearchedSongAdapter  extends RecyclerView.Adapter<SearchedSongAdapt
         holder.songSinger.setText(singer);
         holder.songGenre.setText(genre);
         holder.songComposer.setText(composer);
+
+        holder.clickedSong = song;
     }
 
     @Override
@@ -88,12 +92,16 @@ public class SearchedSongAdapter  extends RecyclerView.Adapter<SearchedSongAdapt
         return mContext;
     }
 
-    public class SearchedSongViewHolder extends RecyclerView.ViewHolder{
+    public class SearchedSongViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView songImage;
         public TextView songName;
         public TextView songSinger;
         public TextView songComposer;
         public TextView songGenre;
+        private View searchItemView;
+        MainActivity main = (MainActivity) mContext;
+        protected Song clickedSong;
+
         public SearchedSongViewHolder(@NonNull View itemView) {
             super(itemView);
             songImage = (ImageView) itemView.findViewById(R.id.searchedSongImage);
@@ -101,6 +109,14 @@ public class SearchedSongAdapter  extends RecyclerView.Adapter<SearchedSongAdapt
             songSinger = (TextView) itemView.findViewById(R.id.searchedSongSinger);
             songComposer = (TextView) itemView.findViewById(R.id.searchedSongComposer);
             songGenre = (TextView) itemView.findViewById(R.id.searchedSongGenre);
+            searchItemView = itemView.findViewById( R.id.searchItemView );
+            searchItemView.setOnClickListener( this );
+        }
+
+        @Override
+        public void onClick(View v) {
+            Log.d("SearchSongAdapter", "searched song click----------------");
+            main.uncollapseFragment( SongPlayingFragment.newInstance(clickedSong, MainActivity.getLastestSong()));
         }
     }
 }

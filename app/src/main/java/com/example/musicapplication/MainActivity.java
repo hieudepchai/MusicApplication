@@ -3,6 +3,7 @@ package com.example.musicapplication;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -24,6 +26,8 @@ import com.example.musicapplication.model.Singer;
 import com.example.musicapplication.model.Song;
 import com.example.musicapplication.service.RetrofitInterface;
 import com.example.musicapplication.service.RetrofitService;
+import com.example.musicapplication.ui.playing.ItemTrackAdapter;
+import com.example.musicapplication.ui.playing.SongPlayingFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.InputStream;
@@ -42,9 +46,9 @@ public class MainActivity extends AppCompatActivity {
     private static List<Composer> listComposer;
     private static View mainPlayer;
     private static View navigationBar;
-    private boolean playPause = true;
-    private boolean initialStage = true;
-    private MediaPlayer mediaPlayer;
+    private static boolean playPause = true;  //play: true     pause: false
+    private static boolean initialStage = true;
+    private static MediaPlayer mediaPlayer;
     private ProgressDialog progressDialog;
     private int pauseCurrentPosition;
     private int position;
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
     public MainActivity() {
         mediaPlayer = new MediaPlayer();
-
+        mediaPlayer.setAudioStreamType( AudioManager.STREAM_MUSIC);
     }
 
     @Override
@@ -135,20 +139,51 @@ public class MainActivity extends AppCompatActivity {
         return listComposer;
     }
 
+    public static MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
+    }
+
+    public static void setMediaPlayer(MediaPlayer mediaPlayer) {
+        MainActivity.mediaPlayer = mediaPlayer;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public void setPauseCurrentPosition(int pauseCurrentPosition) {
+        this.pauseCurrentPosition = pauseCurrentPosition;
+    }
+
+    public static boolean isPlayPause() {
+        return playPause;
+    }
+
+    public static void setPlayPause(boolean playPause) {
+        MainActivity.playPause = playPause;
+    }
+
+    public static boolean isInitialStage() {
+        return initialStage;
+    }
+
+    public static void setInitialStage(boolean initialStage) {
+        MainActivity.initialStage = initialStage;
+    }
+
     public static void setListSong(List<Song> listSong) {
         MainActivity.listSong = listSong;
     }
 
-    public static List<Song> getLastestSong(){ //last 20 songs
+    public static List<Song> getLastestSong(){ //last 30 songs
         List<Song> latestSong = new ArrayList<>(  );
-        for(int i=listSong.size()-1; i>=listSong.size()-20; i--){
+        for(int i=listSong.size()-1; i>=listSong.size()-30; i--){
             latestSong.add(listSong.get( i ));
         }
         return latestSong;
     }
 
-    private void mainPlayerSetup(){
-        songItem = listSong.get(position);
+    private void mainPlayerSetup(Song songItem){
 
         new DownloadImageTask( (ImageView) findViewById( R.id.mainPlayerImg ) ).execute( songItem.getThumbnail() );
         TextView mainPlayerName = findViewById( R.id.mainPlayerName );
@@ -167,6 +202,50 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void mainPlayerPosition(){ //set main player by position in listSong
+        songItem = listSong.get(position);
+        mainPlayerSetup( songItem );
+    }
+
+    public void mainPlayerSong(Song songPlaying){ //set main Player by songPlaying transferring from SongPlayingFragment
+        songItem = songPlaying;
+        mainPlayerSetup( songItem );
+
+        if(!playPause){
+            playStop.setBackgroundResource( R.drawable.ic_play_arrow_black_24dp );
+            playPause = true;
+        }else{
+            playStop.setBackgroundResource( R.drawable.ic_pause_black_24dp );
+            playPause = false;
+        }
+
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+
+                Log.e(TAG, "media player: reset---------------");
+                if(position == listSong.size()-1){
+                    initialStage = true;
+                    playPause = true;
+                    mediaPlayer.stop();
+                    mediaPlayer.reset();
+                    playStop.setBackgroundResource( R.drawable.ic_play_arrow_black_24dp );
+                }else{
+                    position += 1;
+                    mediaPlayer.reset();
+                    mainPlayerPosition();
+                    new downloadMusicTask().execute(songItem.getDownloadurl());
+
+                    playStop.setBackgroundResource( R.drawable.ic_pause_black_24dp );
+                    //mediaPlayer.start();
+
+                    playPause = false;
+                }
+
+            }
+        });
+    }
+
     private void mainPlayerNextPlayBack(){
         ImageView moveNext = findViewById( R.id.mainPlayerSkipNext );
         ImageView moveBack = findViewById( R.id.mainPlayerPrevBack );
@@ -179,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     position += 1;
                     mediaPlayer.reset();
-                    mainPlayerSetup();
+                    mainPlayerPosition();
                     new downloadMusicTask().execute(songItem.getDownloadurl());
 
                     playStop.setBackgroundResource( R.drawable.ic_pause_black_24dp );
@@ -197,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     position -= 1;
                     mediaPlayer.reset();
-                    mainPlayerSetup();
+                    mainPlayerPosition();
                     new downloadMusicTask().execute(songItem.getDownloadurl());
 
                     playStop.setBackgroundResource( R.drawable.ic_pause_black_24dp );
@@ -214,6 +293,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(playPause){
                     playStop.setBackgroundResource( R.drawable.ic_pause_black_24dp );
+                    playPause = false;
                     if(initialStage){
                         new downloadMusicTask().execute(songItem.getDownloadurl());
                     }else{
@@ -225,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
                         if(mediaPlayer==null) {
                             mediaPlayer.start();
                         }
-                        playPause = false;
+
                     }
 
                 }else{
@@ -236,6 +316,20 @@ public class MainActivity extends AppCompatActivity {
                     }
                     playPause = true;
                 }
+            }
+        } );
+
+        mainPlayer.setOnClickListener( new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                List<Song> latestSong = getLastestSong();
+
+                ItemTrackAdapter.setIsMainPlayer( true );
+                ItemTrackAdapter.setMediaPlayer( mediaPlayer );
+                ItemTrackAdapter.setPositionPlaying( mediaPlayer.getCurrentPosition() );
+
+                uncollapseFragment( SongPlayingFragment.newInstance( songItem, latestSong ) );
+
             }
         } );
     }
@@ -256,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
         mainPlayer = findViewById( R.id.mainPlayer );
         navigationBar = findViewById( R.id.bottom_navigation_parent );
         position = 3;
-        mainPlayerSetup();
+        mainPlayerPosition();
         mainPlayerNextPlayBack();
     }
     public void goToFragment(Fragment fragment) {
@@ -270,16 +364,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void uncollapseFragment(Fragment fragment){
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.slide_in_top, R.anim.slide_out_bottom )
-                .replace(R.id.nav_host_fragment, fragment) // replace flContainer
-                .addToBackStack(null)
-                .commit();
+        if(fragment.isHidden()){
+            Log.e(TAG, "playing fragment: show");
+            getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.slide_in_top, R.anim.slide_out_bottom )
+                    .show(fragment)
+                    .commit();
+        }else{
+            Log.e(TAG, "playing fragment: initial");
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(R.anim.slide_in_top, R.anim.slide_out_bottom )
+                    .replace(R.id.nav_host_fragment, fragment) // replace flContainer
+                    .addToBackStack(null)
+                    .commit();
+        }
+
         mainPlayer.setVisibility( View.GONE );
         navigationBar.setVisibility( View.GONE );
     }
 
+    public void hideMainPlayer(){
+        mainPlayer.setVisibility( View.GONE );
+        if(!playPause){
+            playStop.setBackgroundResource( R.drawable.ic_play_arrow_black_24dp );
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                pauseCurrentPosition=mediaPlayer.getCurrentPosition();
+            }
+            playPause = true;
+        }
+    }
     public static void showMainPlayer(){
         mainPlayer.setVisibility( View.VISIBLE );
         navigationBar.setVisibility( View.VISIBLE );
@@ -325,9 +440,10 @@ public class MainActivity extends AppCompatActivity {
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mediaPlayer) {
-                        //initialStage = true;
+
                         Log.e(TAG, "media player: reset---------------");
                         if(position == listSong.size()-1){
+                            initialStage = true;
                             playPause = true;
                             mediaPlayer.stop();
                             mediaPlayer.reset();
@@ -335,7 +451,7 @@ public class MainActivity extends AppCompatActivity {
                         }else{
                             position += 1;
                             mediaPlayer.reset();
-                            mainPlayerSetup();
+                            mainPlayerPosition();
                             new downloadMusicTask().execute(songItem.getDownloadurl());
 
                             playStop.setBackgroundResource( R.drawable.ic_pause_black_24dp );
@@ -379,9 +495,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void setMediaPlayer(MediaPlayer mediaPlayer) {
-        this.mediaPlayer = mediaPlayer;
-    }
 
     @Override
     protected void onStart() {
