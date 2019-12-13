@@ -89,7 +89,7 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
         @Override
         public void onClick(View v) {
             Log.d(TAG, "song click----------------");
-            main.goToFragment( SongPlayingFragment.newInstance(playingSong, lastestSong));
+            main.uncollapseFragment( SongPlayingFragment.newInstance(playingSong, lastestSong));
         }
     }
 

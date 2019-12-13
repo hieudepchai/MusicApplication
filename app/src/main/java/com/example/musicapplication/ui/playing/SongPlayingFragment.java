@@ -6,15 +6,10 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,10 +19,7 @@ import com.example.musicapplication.MainActivity;
 import com.example.musicapplication.R;
 import com.example.musicapplication.model.Song;
 
-import java.security.Key;
 import java.util.List;
-
-import co.mobiwise.library.OnActionClickedListener;
 
 
 public class SongPlayingFragment extends Fragment {
@@ -118,7 +110,11 @@ public class SongPlayingFragment extends Fragment {
     public void onBackPressed()
     {
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        fm.popBackStack();
+        fm.beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_top )
+                .hide(this)
+                .commit();
+        MainActivity.showMainPlayer();
     }
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
