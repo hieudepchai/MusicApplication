@@ -1,7 +1,6 @@
 package com.example.musicapplication;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
@@ -41,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private static List<Singer> listSinger;
     private static List<Genre> listGenre;
     private static List<Composer> listComposer;
+    private static View mainPlayer;
+    private static View navigationBar;
     private boolean playPause = true;
     private boolean initialStage = true;
     private MediaPlayer mediaPlayer;
@@ -231,6 +232,8 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
         progressDialog = new ProgressDialog( MainActivity.this );
+        mainPlayer = findViewById( R.id.mainPlayer );
+        navigationBar = findViewById( R.id.bottom_navigation_parent );
         position = 3;
         mainPlayerSetup();
         mainPlayerNextPlayBack();
@@ -243,6 +246,22 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.nav_host_fragment, fragment) // replace flContainer
                 .addToBackStack(null)
                 .commit();
+    }
+
+    public void uncollapseFragment(Fragment fragment){
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_top, R.anim.slide_out_bottom )
+                .replace(R.id.nav_host_fragment, fragment) // replace flContainer
+                .addToBackStack(null)
+                .commit();
+        mainPlayer.setVisibility( View.GONE );
+        navigationBar.setVisibility( View.GONE );
+    }
+
+    public static void showMainPlayer(){
+        mainPlayer.setVisibility( View.VISIBLE );
+        navigationBar.setVisibility( View.VISIBLE );
     }
 
     public static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
@@ -287,12 +306,26 @@ public class MainActivity extends AppCompatActivity {
                     public void onCompletion(MediaPlayer mediaPlayer) {
                         //initialStage = true;
                         Log.e(TAG, "media player: reset---------------");
-                        playPause = true;
-                        mediaPlayer.stop();
-                        mediaPlayer.reset();
-                        playStop.setBackgroundResource( R.drawable.ic_play_arrow_black_24dp );
+                        if(position == listSong.size()-1){
+                            playPause = true;
+                            mediaPlayer.stop();
+                            mediaPlayer.reset();
+                            playStop.setBackgroundResource( R.drawable.ic_play_arrow_black_24dp );
+                        }else{
+                            position += 1;
+                            mediaPlayer.reset();
+                            mainPlayerSetup();
+                            new downloadMusicTask().execute(songItem.getDownloadurl());
+
+                            playStop.setBackgroundResource( R.drawable.ic_pause_black_24dp );
+                            //mediaPlayer.start();
+
+                            playPause = false;
+                        }
+
                     }
                 });
+                //mediaPlayer.setNextMediaPlayer( new MediaPlayer() );
                 mediaPlayer.prepare();
                 prepared = true;
 
