@@ -3,7 +3,12 @@ package com.example.musicapplication.ui.playing;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.AudioFormat;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -25,6 +30,8 @@ import com.example.musicapplication.ui.home.HomeFragment;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -66,6 +73,10 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             return MUSIC_ITEM_LAYOUT;
     }
 
+    private void musicPlayingSetup(Song playingSong){
+
+    }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -90,13 +101,15 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+
         if(holder.getItemViewType()== USER_ACTIVITY_LAYOUT)
         {
             MusicPlayingHolder userActivityViewHolder = (MusicPlayingHolder)holder;
+            userActivityViewHolder.mInteractivePlayerView.setCoverURL(playingSong.getThumbnail());
             userActivityViewHolder.title.setText((playingSong.getName()));
             if(playingSong.getComposers().size() > 0){
-            userActivityViewHolder.artist.setText(playingSong.getComposers().get(0).getName());}
-            userActivityViewHolder.background.setImageResource(R.drawable.background);
+                userActivityViewHolder.artist.setText(playingSong.getComposers().get(0).getName());}
+            new MainActivity.DownloadImageTask(userActivityViewHolder.background).execute(playingSong.getThumbnail());
             userActivityViewHolder.mInteractivePlayerView.setMax(60);
             userActivityViewHolder.mInteractivePlayerView.setProgress(0);
             userActivityViewHolder.mInteractivePlayerView.setOnActionClickedListener(this);
@@ -107,6 +120,9 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             musicViewHolder.songName.setText(songItem.getName());
             if (songItem.getComposers().size() > 0)
                 musicViewHolder.artist.setText(songItem.getComposers().get(0).getName());
+            musicViewHolder.NextSong = songItem;
+            musicViewHolder.position = position-1;
+            new MainActivity.DownloadImageTask(musicViewHolder.img).execute(songItem.getThumbnail());
         }
 
     }
@@ -140,7 +156,6 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private InteractivePlayerView mInteractivePlayerView;
         private ImageView control;
         private ImageView back_button;
-        InteractivePlayerView imagecv;
         protected View control_cover;
 
         public MusicPlayingHolder(View itemView) {
@@ -216,7 +231,6 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     mediaPlayer.prepare();
                     prepared = true;
                     timer = TimeUnit.MILLISECONDS.toSeconds(mediaPlayer.getDuration());
-//                    Log.d("ItemTrackAdapter", "-----------------------------timer: " + timer);
 
 
                 } catch (Exception e) {
@@ -253,19 +267,34 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    class MusicItemHolder extends RecyclerView.ViewHolder{
+    public class MusicItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView songName;
         protected TextView artist;
+        ImageView img;
+        protected Song NextSong;
+        protected int position;
+        View latestSongView;
 
 
         public MusicItemHolder(View itemView) {
             super(itemView);
             songName = (TextView)itemView.findViewById(R.id.textViewSongTitle);
             artist = (TextView)itemView.findViewById(R.id.textViewArtistName);
+            img = (ImageView) itemView.findViewById(R.id.imageTrack);
+            latestSongView = itemView.findViewById(R.id.latestSongView);
+            latestSongView.setOnClickListener(this);
+
         }
 
+        @Override
+        public void onClick(View v) {
+            playingSong = NextSong;
+            notifyItemChanged(0);
+            Log.e(TAG, "new latest item click");
+        }
     }
+
 
 
 }
