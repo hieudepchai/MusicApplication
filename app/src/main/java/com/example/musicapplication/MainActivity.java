@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private static boolean playPause = true;  //play: true     pause: false
     private static boolean initialStage = true;
     private static MediaPlayer mediaPlayer;
+    private static SongPlayingFragment songPlayingFragment;
     private ProgressDialog progressDialog;
     private int pauseCurrentPosition;
     private int position;
@@ -169,6 +170,10 @@ public class MainActivity extends AppCompatActivity {
 
     public static void setInitialStage(boolean initialStage) {
         MainActivity.initialStage = initialStage;
+    }
+
+    public static void setSongPlayingFragment(SongPlayingFragment songPlayingFragment) {
+        MainActivity.songPlayingFragment = songPlayingFragment;
     }
 
     public static void setListSong(List<Song> listSong) {
@@ -495,6 +500,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        songPlayingFragment.onBackPressed();
+    }
 
     @Override
     protected void onStart() {
