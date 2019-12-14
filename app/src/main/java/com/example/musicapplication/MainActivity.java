@@ -407,6 +407,24 @@ public class MainActivity extends AppCompatActivity {
         navigationBar.setVisibility( View.VISIBLE );
     }
 
+    private void addRecentListSong(){
+        boolean check=false;
+        if(MainActivity.recentlyPlayed.size()==0)
+            MainActivity.recentlyPlayed.add(songItem);
+        else {
+            for (int i=0; i  < MainActivity.recentlyPlayed.size() ; i++) {
+                if (songItem != MainActivity.recentlyPlayed.get(i)){
+                    check=true;
+                }
+                else {check=false;
+                    break;}
+            }
+            if(check==true)
+                MainActivity.recentlyPlayed.add(songItem);
+
+        }
+    }
+
     public static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
         public DownloadImageTask(ImageView bmImage) {
@@ -490,6 +508,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
             mediaPlayer.start();
+            addRecentListSong();
             initialStage = false;
         }
 
