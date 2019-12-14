@@ -116,21 +116,6 @@ public class SearchedSongAdapter  extends RecyclerView.Adapter<SearchedSongAdapt
         @Override
         public void onClick(View v) {
             Log.d("SearchSongAdapter", "searched song click----------------");
-            boolean check=false;
-            if(MainActivity.recentlyPlayed.size()==0)
-                MainActivity.recentlyPlayed.add(clickedSong);
-            else {
-                for (int i=0; i  < MainActivity.recentlyPlayed.size() ; i++) {
-                    if (clickedSong != MainActivity.recentlyPlayed.get(i)){
-                        check=true;
-                    }
-                    else {check=false;
-                        break;}
-                }
-                if(check==true)
-                    MainActivity.recentlyPlayed.add(clickedSong);
-
-            }
             main.uncollapseFragment( SongPlayingFragment.newInstance(clickedSong, MainActivity.getLastestSong()));
         }
     }
