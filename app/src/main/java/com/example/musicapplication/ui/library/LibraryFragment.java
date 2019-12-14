@@ -37,17 +37,7 @@ public class LibraryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
-        libraryViewModel =
-                ViewModelProviders.of(this).get(LibraryViewModel.class);
         View root = inflater.inflate(R.layout.fragment_library, container, false);
-        final TextView textView = root.findViewById(R.id.text_library);
-        libraryViewModel.getText().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
         List<Song> recentSong = new ArrayList<>( MainActivity.recentlyPlayed );
         Collections.reverse(recentSong);
         ItemSongAdapter songAdapter = new ItemSongAdapter(getActivity(), recentSong);
