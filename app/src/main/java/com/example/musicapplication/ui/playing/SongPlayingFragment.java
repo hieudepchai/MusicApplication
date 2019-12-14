@@ -38,6 +38,7 @@ public class SongPlayingFragment extends Fragment {
         // Required empty public constructor
         this.playingSong = playingSong;
         this.latestSong = latestSong;
+        MainActivity.setSongPlayingFragment( this );
     }
 
     public static SongPlayingFragment newInstance(Song playingSong, List<Song> latestSong) {
