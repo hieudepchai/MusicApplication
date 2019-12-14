@@ -298,20 +298,13 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         public void onClick(View v) {
             playingSong = NextSong;
 //check for add to recently played
-            boolean check=false;
-            for (int i=0; i  < MainActivity.recentlyPlayed.size() ; i++) {
-                if (playingSong != MainActivity.recentlyPlayed.get(i)){
-                    check=true;
-                }
-                else {check=false;
-                    break;}
-            }
-            if(check==true)
-                MainActivity.recentlyPlayed.add(playingSong);
 
-            notifyItemChanged(0);
+            Log.e(TAG, "change playing music");
             mediaPlayer.reset();
+            mInteractivePlayerView.stop();
+            mInteractivePlayerView.setProgress( 0 );
             isFirstLoad = true;
+            notifyItemChanged(0);
         }
     }
     public void MediaStart(View view){
@@ -327,7 +320,25 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         mediaPlayer.pause();
         pauseCurrentPosition=mediaPlayer.getCurrentPosition();
 
-    };
+    }
+
+    private void addRecentPlayed(){
+        boolean check=false;
+        if(MainActivity.recentlyPlayed.size()==0)
+            MainActivity.recentlyPlayed.add(playingSong);
+        else {
+            for (int i=0; i  < MainActivity.recentlyPlayed.size() ; i++) {
+                if (playingSong != MainActivity.recentlyPlayed.get(i)){
+                    check=true;
+                }
+                else {check=false;
+                    break;}
+            }
+            if(check==true)
+                MainActivity.recentlyPlayed.add(playingSong);
+
+        }
+    }
 
     class Player extends AsyncTask<String, Void, Boolean> {
         @Override
@@ -373,6 +384,7 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             mediaPlayer.start();
             playPause = false;
             initialStage = false;
+            addRecentPlayed();
             MainActivity.setInitialStage(false);
         }
 
