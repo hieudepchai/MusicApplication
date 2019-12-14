@@ -16,7 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicapplication.MainActivity;
 import com.example.musicapplication.R;
+import com.example.musicapplication.model.Song;
 import com.example.musicapplication.ui.home.ItemSongAdapter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class LibraryFragment extends Fragment {
 
@@ -42,7 +48,9 @@ public class LibraryFragment extends Fragment {
                 textView.setText(s);
             }
         });
-        ItemSongAdapter songAdapter = new ItemSongAdapter(getActivity(), MainActivity.recentlyPlayed);
+        List<Song> recentSong = new ArrayList<>( MainActivity.recentlyPlayed );
+        Collections.reverse(recentSong);
+        ItemSongAdapter songAdapter = new ItemSongAdapter(getActivity(), recentSong);
         RecyclerView songItem = root.findViewById( R.id.recently_recyclerview );
         songItem.setAdapter( songAdapter );
         LinearLayoutManager childLayoutManager = new LinearLayoutManager( songItem.getContext(), LinearLayoutManager.HORIZONTAL, false);
