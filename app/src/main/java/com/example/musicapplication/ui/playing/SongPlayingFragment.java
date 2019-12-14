@@ -44,7 +44,6 @@ public class SongPlayingFragment extends Fragment {
     public static SongPlayingFragment newInstance(Song playingSong, List<Song> latestSong) {
         SongPlayingFragment fragment = new SongPlayingFragment(playingSong, latestSong);
         Bundle args = new Bundle();
-
         fragment.setArguments( args );
         return fragment;
     }

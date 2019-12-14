@@ -11,13 +11,16 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.musicapplication.MainActivity;
 import com.example.musicapplication.R;
+import com.example.musicapplication.ui.home.ItemSongAdapter;
 
 public class LibraryFragment extends Fragment {
 
     private LibraryViewModel libraryViewModel;
-
     public static LibraryFragment newInstance() {
         LibraryFragment fragment = new LibraryFragment();
         Bundle args = new Bundle();
@@ -39,6 +42,13 @@ public class LibraryFragment extends Fragment {
                 textView.setText(s);
             }
         });
+        ItemSongAdapter songAdapter = new ItemSongAdapter(getActivity(), MainActivity.recentlyPlayed);
+        RecyclerView songItem = root.findViewById( R.id.recently_recyclerview );
+        songItem.setAdapter( songAdapter );
+        LinearLayoutManager childLayoutManager = new LinearLayoutManager( songItem.getContext(), LinearLayoutManager.HORIZONTAL, false);
+
+        songItem.setLayoutManager( childLayoutManager );
+
         return root;
     }
 }
