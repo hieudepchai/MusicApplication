@@ -61,15 +61,10 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        Log.d("HomeFragment", "onActivityCreated: run");
-//        getView().findViewById(R.id.navigation_stream).setOnClickListener( new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d("HomeFragment", "click Stream");
-//            }
-//        } );
+    public void onStart() {
+        super.onStart();
+
+
     }
 
     public HashMap<String, List<Song>> divideListSong(List<Song> listSong, List<Genre> listGenre){

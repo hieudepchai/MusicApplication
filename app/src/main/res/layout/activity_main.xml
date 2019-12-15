@@ -26,7 +26,7 @@
         android:id="@+id/mainPlayer"
         layout="@layout/mainplayer_layout"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         app:layout_constraintBottom_toTopOf="@id/bottom_navigation_parent" />
 

@@ -12,6 +12,7 @@ import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -141,6 +142,33 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 if(!initialStage){
                     mediaPlayer.reset();
                     new Player().execute(playingSong.getDownloadurl());
+
+//                    if(MainActivity.mediaPlayerPlayed.get(playingSong.getId()) == null){
+//                        Log.e(TAG, "play new song");
+//
+//                        new Player().execute(playingSong.getDownloadurl());
+//                    }else{
+//                        Log.e(TAG, "play song again");
+//                        //mediaPlayer = MainActivity.mediaPlayerPlayed.get(playingSong.getId());
+//                        mediaPlayer = MainActivity.testMedia;
+//
+//                        timer = TimeUnit.MILLISECONDS.toSeconds(mediaPlayer.getDuration());
+//                        mInteractivePlayerView.setMax((int)timer);
+//                        mInteractivePlayerView.start();
+//                        control.setBackgroundResource(R.drawable.ic_action_pause);
+//
+//                        mediaPlayer.setOnPreparedListener( new MediaPlayer.OnPreparedListener() {
+//                            @Override
+//                            public void onPrepared(MediaPlayer mp) {
+//                                mp.seekTo( 0 );
+//                                mp.start();
+//                            }
+//                        } );
+//                        //mediaPlayer.start();
+//                        playPause = false;
+//                        initialStage = false;
+//                    }
+
                 }
 
             }else{
@@ -323,9 +351,11 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private void addRecentPlayed(){
         boolean check=false;
-        if(MainActivity.recentlyPlayed.size()==0)
+        if(MainActivity.recentlyPlayed.size()==0){
             MainActivity.recentlyPlayed.add(playingSong);
-        else {
+            MediaPlayer saveMediaPlayer = mediaPlayer;
+            MainActivity.mediaPlayerPlayed.put(playingSong.getId(), saveMediaPlayer);
+        } else {
             for (int i=0; i  < MainActivity.recentlyPlayed.size() ; i++) {
                 if (playingSong != MainActivity.recentlyPlayed.get(i)){
                     check=true;
@@ -333,9 +363,11 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 else {check=false;
                     break;}
             }
-            if(check==true)
+            if(check==true){
                 MainActivity.recentlyPlayed.add(playingSong);
-
+                MediaPlayer saveMediaPlayer = mediaPlayer;
+                MainActivity.mediaPlayerPlayed.put(playingSong.getId(), saveMediaPlayer);
+            }
         }
     }
 
@@ -380,10 +412,11 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 control.setBackgroundResource(R.drawable.ic_action_pause);
 
             }
+            addRecentPlayed();
             mediaPlayer.start();
             playPause = false;
             initialStage = false;
-            addRecentPlayed();
+
             MainActivity.setInitialStage(false);
         }
 

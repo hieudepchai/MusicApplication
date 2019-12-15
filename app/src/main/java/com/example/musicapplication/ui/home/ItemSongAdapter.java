@@ -1,7 +1,9 @@
 package com.example.musicapplication.ui.home;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +24,16 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
     private static final String TAG = "Item Adapter";
     private Context mContext;
     private List<Song> songList;
+    private List<Pair<MediaPlayer, Song>> recentSong;
 
     public ItemSongAdapter(Context mContext, List<Song> listSong){
         this.mContext = mContext;
         this.songList = listSong;
+    }
+
+    public ItemSongAdapter(Context mContext, List<Pair<MediaPlayer, Song>> recentSong, String temp){
+        this.mContext = mContext;
+        this.recentSong = recentSong;
     }
 
     @NonNull
@@ -70,7 +78,6 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
         View view_over;
         protected View root;
         protected Song playingSong;
-        private List<Song> lastestSong;
         MainActivity main = (MainActivity) mContext;
 
         public ItemHolder(@NonNull View itemView) {
@@ -82,30 +89,16 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
             view_over = itemView.findViewById(R.id.song_over);
             view_over.setOnClickListener(this);
             //view_over.setOnTouchListener(this);
-
-            lastestSong = main.getLastestSong();
         }
 
         @Override
         public void onClick(View v) {
             Log.d(TAG, "song click----------------");
             //check for add to recently played
-            boolean check=false;
-            if(MainActivity.recentlyPlayed.size()==0)
-                MainActivity.recentlyPlayed.add(playingSong);
-            else {
-                for (int i=0; i  < MainActivity.recentlyPlayed.size() ; i++) {
-                    if (playingSong != MainActivity.recentlyPlayed.get(i)){
-                        check=true;
-                    }
-                    else {check=false;
-                            break;}
-                }
-                if(check==true)
-                    MainActivity.recentlyPlayed.add(playingSong);
-
-            }
-            main.uncollapseFragment( SongPlayingFragment.newInstance(playingSong, lastestSong));
+            if(MainActivity.getAlbumSong( playingSong.getAlbum() ).size() > 4)
+                main.uncollapseFragment( SongPlayingFragment.newInstance(playingSong, MainActivity.getAlbumSong( playingSong.getAlbum() )));
+            else
+                main.uncollapseFragment( SongPlayingFragment.newInstance(playingSong, MainActivity.getLastestSong()));
         }
     }
 
