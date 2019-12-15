@@ -195,10 +195,11 @@ public class ItemTrackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             musicViewHolder.songName.setText(songItem.getName());
             if (songItem.getComposers().size() > 0)
                 musicViewHolder.artist.setText(songItem.getComposers().get(0).getName());
-            musicViewHolder.NextSong = songItem;
 
             musicViewHolder.position = position-1;
             new MainActivity.DownloadImageTask(musicViewHolder.img).execute(songItem.getThumbnail());
+            musicViewHolder.NextSong = songItem;
+
         }
 
     }
