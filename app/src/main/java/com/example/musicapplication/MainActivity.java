@@ -7,14 +7,17 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -31,9 +34,10 @@ import com.example.musicapplication.ui.playing.SongPlayingFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
     private static List<Singer> listSinger;
     private static List<Genre> listGenre;
     private static List<Composer> listComposer;
-    public static List<Song> recentlyPlayed = new ArrayList<>();
+    public static List<Song> recentlyPlayed;
+    public static HashMap<Integer, MediaPlayer> mediaPlayerPlayed;
     private static View mainPlayer;
     private static View navigationBar;
     private static boolean playPause = true;  //play: true     pause: false
@@ -53,15 +58,21 @@ public class MainActivity extends AppCompatActivity {
     private static MediaPlayer mediaPlayer;
     private static SongPlayingFragment songPlayingFragment;
     private ProgressDialog progressDialog;
-    private int pauseCurrentPosition;
+    private static int pauseCurrentPosition;
     private int position;
     private Song songItem;
 
-    private ImageView playStop;
+    private static ImageView playStop;
+    public static MediaPlayer testMedia;
+    private ProgressBar mainPlayerProgressbar;
+    final Handler handler;
 
     public MainActivity() {
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType( AudioManager.STREAM_MUSIC);
+        recentlyPlayed = new ArrayList<>(  );
+        mediaPlayerPlayed = new HashMap<>(  );
+        handler = new Handler(  );
     }
 
     @Override
@@ -190,6 +201,24 @@ public class MainActivity extends AppCompatActivity {
         return latestSong;
     }
 
+    public static  List<Song> getAlbumSong(String album){
+        List<Song> albumSong = new ArrayList<>(  );
+        for(int i=0; i<listSong.size(); i++){
+            if(listSong.get(i).getAlbum() == album){
+                albumSong.add( listSong.get( i ) );
+            }
+        }
+        return albumSong;
+    }
+
+    private void getAlbum(){ //list song by album
+        HashMap<String, List<Song>> album = new HashMap<>(  );
+        for(int i=0; i<listSong.size(); i++){
+            album.put( listSong.get(i).getAlbum(), MainActivity.getAlbumSong( listSong.get(i).getAlbum() ) );
+        }
+        int a = 3;
+    }
+
     private void mainPlayerSetup(Song songItem){
 
         new DownloadImageTask( (ImageView) findViewById( R.id.mainPlayerImg ) ).execute( songItem.getThumbnail() );
@@ -206,7 +235,6 @@ public class MainActivity extends AppCompatActivity {
         TextView mainPlayerSinger = findViewById( R.id.mainPlayerSinger );
         mainPlayerSinger.setText( singers );
         //new downloadMusicTask().execute(songItem.getDownloadurl());
-
     }
 
     private void mainPlayerPosition(){ //set main player by position in listSong
@@ -214,9 +242,10 @@ public class MainActivity extends AppCompatActivity {
         mainPlayerSetup( songItem );
     }
 
-    public void mainPlayerSong(Song songPlaying){ //set main Player by songPlaying transferring from SongPlayingFragment
+    public void mainPlayerSong(Song songPlaying){ //set main Player by songPlaying transferred from SongPlayingFragment
         songItem = songPlaying;
         mainPlayerSetup( songItem );
+        updateSeekBar();
 
         if(!playPause){
             playStop.setBackgroundResource( R.drawable.ic_play_arrow_black_24dp );
@@ -230,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
 
-                Log.e(TAG, "media player: reset---------------");
+                Log.e(TAG, "media player: reset------1---------------");
                 if(position == listSong.size()-1){
                     initialStage = true;
                     playPause = true;
@@ -307,6 +336,7 @@ public class MainActivity extends AppCompatActivity {
                         if (!mediaPlayer.isPlaying()){
                             mediaPlayer.seekTo(pauseCurrentPosition);
                             mediaPlayer.start();
+                            updateSeekBar();
                         }
 
                         if(mediaPlayer==null) {
@@ -323,6 +353,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     playPause = true;
                 }
+
             }
         } );
 
@@ -356,7 +387,9 @@ public class MainActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog( MainActivity.this );
         mainPlayer = findViewById( R.id.mainPlayer );
         navigationBar = findViewById( R.id.bottom_navigation_parent );
-        position = 3;
+
+        mainPlayerProgressbar = findViewById( R.id.mainPlayerSeekbar );
+        position = 53;
         mainPlayerPosition();
         mainPlayerNextPlayBack();
     }
@@ -391,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
         navigationBar.setVisibility( View.GONE );
     }
 
-    public void hideMainPlayer(){
+    public static void hideMainPlayer(){
         mainPlayer.setVisibility( View.GONE );
         if(!playPause){
             playStop.setBackgroundResource( R.drawable.ic_play_arrow_black_24dp );
@@ -409,9 +442,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void addRecentListSong(){
         boolean check=false;
-        if(MainActivity.recentlyPlayed.size()==0)
+        if(MainActivity.recentlyPlayed.size()==0){
             MainActivity.recentlyPlayed.add(songItem);
-        else {
+            MediaPlayer saveMediaPlayer = mediaPlayer;
+            MainActivity.mediaPlayerPlayed.put(songItem.getId(), saveMediaPlayer);
+            MainActivity.testMedia = mediaPlayer;
+        } else {
             for (int i=0; i  < MainActivity.recentlyPlayed.size() ; i++) {
                 if (songItem != MainActivity.recentlyPlayed.get(i)){
                     check=true;
@@ -419,12 +455,26 @@ public class MainActivity extends AppCompatActivity {
                 else {check=false;
                     break;}
             }
-            if(check==true)
+            if(check==true){
                 MainActivity.recentlyPlayed.add(songItem);
+                MediaPlayer saveMediaPlayer = mediaPlayer;
+                MainActivity.mediaPlayerPlayed.put(songItem.getId(), saveMediaPlayer);
+            }
 
         }
     }
-
+    private void updateSeekBar() {
+        mainPlayerProgressbar.setProgress( (int) ((mediaPlayer.getCurrentPosition() % (1000*60*60)) / 1000));
+        if(mediaPlayer.isPlaying()){
+            Runnable updater = new Runnable() {
+                @Override
+                public void run() {
+                    updateSeekBar();
+                }
+            };
+            handler.postDelayed( updater, 1000 ); //1 seconds
+        }
+    }
     public static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
         public DownloadImageTask(ImageView bmImage) {
@@ -507,8 +557,10 @@ public class MainActivity extends AppCompatActivity {
                 progressDialog.cancel();
 
             }
-            mediaPlayer.start();
             addRecentListSong();
+            mediaPlayer.start();
+            mainPlayerProgressbar.setMax( (int)TimeUnit.MILLISECONDS.toSeconds(mediaPlayer.getDuration()) );
+            updateSeekBar();
             initialStage = false;
         }
 
