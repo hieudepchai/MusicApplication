@@ -24,11 +24,13 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
     private static final String TAG = "Item Adapter";
     private Context mContext;
     private List<Song> songList;
+    private String songGenre;
     private List<Pair<MediaPlayer, Song>> recentSong;
 
-    public ItemSongAdapter(Context mContext, List<Song> listSong){
+    public ItemSongAdapter(Context mContext, String songGenre, List<Song> listSong){
         this.mContext = mContext;
         this.songList = listSong;
+        this.songGenre = songGenre;
     }
 
     public ItemSongAdapter(Context mContext, List<Pair<MediaPlayer, Song>> recentSong, String temp){
@@ -64,6 +66,7 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
         mAuthor.setText( singers );
 
         itemHolder.playingSong = songItem;
+        itemHolder.genres = songGenre;
     }
 
     @Override
@@ -78,6 +81,7 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
         View view_over;
         protected View root;
         protected Song playingSong;
+        protected String genres;
         MainActivity main = (MainActivity) mContext;
 
         public ItemHolder(@NonNull View itemView) {
@@ -95,10 +99,17 @@ public class ItemSongAdapter extends RecyclerView.Adapter<ItemSongAdapter.ItemHo
         public void onClick(View v) {
             Log.d(TAG, "song click----------------");
             //check for add to recently played
-            if(MainActivity.getAlbumSong( playingSong.getAlbum() ).size() > 4)
-                main.uncollapseFragment( SongPlayingFragment.newInstance(playingSong, MainActivity.getAlbumSong( playingSong.getAlbum() )));
-            else
-                main.uncollapseFragment( SongPlayingFragment.newInstance(playingSong, MainActivity.getLastestSong()));
+            if(genres == "recentPlay"){
+                main.uncollapseFragment( SongPlayingFragment.newInstance(playingSong, songList));
+            }else{
+                if(MainActivity.getAlbumSong( playingSong.getAlbum() ).size() > 4)
+                    main.uncollapseFragment( SongPlayingFragment.newInstance(playingSong, MainActivity.getAlbumSong( playingSong.getAlbum() )));
+                else
+                    //main.uncollapseFragment( SongPlayingFragment.newInstance(playingSong, MainActivity.getLastestSong()));
+                    main.uncollapseFragment( SongPlayingFragment.newInstance( playingSong, MainActivity.divideListSong( MainActivity.getListSong(), MainActivity.getListGenre() ).get(genres)));
+
+            }
+
         }
     }
 

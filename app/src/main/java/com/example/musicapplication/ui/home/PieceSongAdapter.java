@@ -47,7 +47,7 @@ public class PieceSongAdapter extends RecyclerView.Adapter<PieceSongAdapter.Piec
 
         LinearLayoutManager childLayoutManager = new LinearLayoutManager( holder.songItem.getContext(), LinearLayoutManager.HORIZONTAL, false);
 
-        ItemSongAdapter songAdapter = new ItemSongAdapter(mContext, songGenreMap.get(genre));
+        ItemSongAdapter songAdapter = new ItemSongAdapter(mContext, genre, songGenreMap.get(genre));
         RecyclerView songItem = holder.songItem;
         songItem.setAdapter( songAdapter );
         songItem.setLayoutManager( childLayoutManager );

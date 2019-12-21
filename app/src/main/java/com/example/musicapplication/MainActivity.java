@@ -219,6 +219,22 @@ public class MainActivity extends AppCompatActivity {
         int a = 3;
     }
 
+    public static HashMap<String, List<Song>> divideListSong(List<Song> listSong, List<Genre> listGenre){
+        HashMap<String, List<Song>> genreSong = new HashMap<>(  );
+        for(int i = 0; i<listGenre.size(); i++){
+            List<Song> listSongGenre = new ArrayList<>(  );
+            genreSong.put(listGenre.get(i).getName(), listSongGenre);
+        }
+
+        for(int i = 0; i<listSong.size(); i++){
+            for(int j = 0; j<listSong.get(i).getGenres().size(); j++){
+                String genre = listSong.get(i).getGenres().get( j ).getName();
+                genreSong.get(genre).add( listSong.get(i) );
+            }
+        }
+        return genreSong;
+    }
+
     private void mainPlayerSetup(Song songItem){
 
         new DownloadImageTask( (ImageView) findViewById( R.id.mainPlayerImg ) ).execute( songItem.getThumbnail() );
@@ -360,13 +376,13 @@ public class MainActivity extends AppCompatActivity {
         mainPlayer.setOnClickListener( new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                List<Song> latestSong = getLastestSong();
+                List<Song> latestSong = MainActivity.divideListSong( MainActivity.getListSong(), MainActivity.getListGenre() ).get(songItem.getGenres().get(1).getName());
 
                 ItemTrackAdapter.setIsMainPlayer( true );
                 ItemTrackAdapter.setMediaPlayer( mediaPlayer );
                 ItemTrackAdapter.setPositionPlaying( mediaPlayer.getCurrentPosition() );
 
-                uncollapseFragment( SongPlayingFragment.newInstance( songItem, latestSong ) );
+                uncollapseFragment( SongPlayingFragment.newInstance( songItem, latestSong));
 
             }
         } );

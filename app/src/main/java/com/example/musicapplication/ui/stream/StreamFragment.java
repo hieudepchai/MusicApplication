@@ -67,6 +67,7 @@ public class StreamFragment extends Fragment implements MediaPlayer.OnBufferingU
         mp.setOnBufferingUpdateListener( this );
         mp.setOnCompletionListener( this );
         String streamURL = "http://192.168.0.105:2000/";
+        //String streamURL = "http://192.168.43.172:8000/playback.mp3";
 
         //setting the audio stream type to Streaming music
         try{
@@ -163,6 +164,6 @@ public class StreamFragment extends Fragment implements MediaPlayer.OnBufferingU
     @Override
     public void onCompletion(MediaPlayer mp) {
         btn_play_pause.setImageResource( R.drawable.ic_play_arrow_black_24dp );
-        musicView.stopNotesFall();
+        //musicView.stopNotesFall();
     }
 }
