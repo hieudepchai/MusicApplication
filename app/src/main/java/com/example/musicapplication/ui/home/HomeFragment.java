@@ -46,7 +46,7 @@ public class HomeFragment extends Fragment {
         int screen_width = size.x;
         final int screen_height = size.y;
 
-        songGenreMap = divideListSong( mainActivity.getListSong(), mainActivity.getListGenre() );
+        songGenreMap = MainActivity.divideListSong( mainActivity.getListSong(), mainActivity.getListGenre() );
 
         PieceSongAdapter pieceSongAdapter = new PieceSongAdapter(getActivity(), songGenreMap, mainActivity.getListGenre());
         RecyclerView pieceItem = root.findViewById( R.id.recycler_view1 );
@@ -67,19 +67,5 @@ public class HomeFragment extends Fragment {
 
     }
 
-    public HashMap<String, List<Song>> divideListSong(List<Song> listSong, List<Genre> listGenre){
-        HashMap<String, List<Song>> genreSong = new HashMap<>(  );
-        for(int i = 0; i<listGenre.size(); i++){
-            List<Song> listSongGenre = new ArrayList<>(  );
-            genreSong.put(listGenre.get(i).getName(), listSongGenre);
-        }
 
-        for(int i = 0; i<listSong.size(); i++){
-            for(int j = 0; j<listSong.get(i).getGenres().size(); j++){
-                String genre = listSong.get(i).getGenres().get( j ).getName();
-                genreSong.get(genre).add( listSong.get(i) );
-            }
-        }
-        return genreSong;
-    }
 }

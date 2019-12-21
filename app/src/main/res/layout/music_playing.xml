@@ -78,9 +78,9 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="10dp"
-            android:text="Latest Added"
+            android:text="Playlist"
             android:textColor="#EEEEEE"
-            android:textSize="18sp" />
+            android:textSize="20dp" />
 
         <View
             android:id="@+id/view1"

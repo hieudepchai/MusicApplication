@@ -99,7 +99,7 @@ public class SearchFragment extends Fragment {
 //                set height recycler view
                 int searchview_height = searchView.getHeight();
                 ViewGroup.LayoutParams rv_params = rvSearchResult.getLayoutParams();
-                rv_params.height = screen_height -searchview_height-420;
+                rv_params.height = screen_height -searchview_height-420; //420
                 rvSearchResult.setLayoutParams(rv_params);
                 rvSearchResult2.setLayoutParams(rv_params);
                 String type = spinnerDropdown.getSelectedItem().toString();

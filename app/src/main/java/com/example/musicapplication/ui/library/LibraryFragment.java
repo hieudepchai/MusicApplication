@@ -42,7 +42,7 @@ public class LibraryFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_library, container, false);
         List<Song> recentSong = new ArrayList<>( MainActivity.recentlyPlayed );
         Collections.reverse(recentSong);
-        ItemSongAdapter songAdapter = new ItemSongAdapter(getActivity(), recentSong);
+        ItemSongAdapter songAdapter = new ItemSongAdapter(getActivity(), "recentPlay", recentSong);
         RecyclerView songItem = root.findViewById( R.id.recently_recyclerview );
         songItem.setAdapter( songAdapter );
         LinearLayoutManager childLayoutManager = new LinearLayoutManager( songItem.getContext(), LinearLayoutManager.HORIZONTAL, false);
