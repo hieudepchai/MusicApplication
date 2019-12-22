@@ -1,8 +1,8 @@
 # MusicApplication
 
-### create simple stream server by node js and make music application being client:
+### Create simple stream server by node js and make music application being client:
 
-- create file **server.js** and copy below code:
+- Create file **server.js** and copy below code:
 ```
 var http = require('http'),
     fileSystem = require('fs'),
@@ -26,15 +26,15 @@ http.createServer(function(request, response) {
 	console.log("Listening on 2000");
     });
 ```    
-- change filePath which links to a local .mp3 file.
+- Change filePath which links to a local .mp3 file.
 ```
 var filePath = '< your local .mp3 file >';
 ```
-- run the server.
+- Run the server.
 ```
 node server.js
 ```
-- change **streamURL** in **streamFragment.java** to "http://< your localhost IP >:2000/"
+- Change **streamURL** in **streamFragment.java** to "http://< your localhost IP >:2000/"
 ```
 String streamURL = "http://< your localhost IP >:2000/";
 ```
