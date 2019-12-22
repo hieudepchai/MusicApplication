@@ -10,7 +10,7 @@ var http = require('http'),
     util = require('util');
 
 http.createServer(function(request, response) {
-    var filePath = '< your local .mp3 file >';
+    var filePath = '<your local .mp3 file>';
     var stat = fileSystem.statSync(filePath);
     
     response.writeHead(200, {
@@ -32,5 +32,5 @@ node server.js
 ```
 - Change **streamURL** in **streamFragment.java** to "http://< your localhost IP >:2000/"
 ```
-String streamURL = "http://< your localhost IP >:2000/";
+String streamURL = "http://<your localhost IP>:2000/";
 ```
