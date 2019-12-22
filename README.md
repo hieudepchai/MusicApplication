@@ -26,10 +26,11 @@ http.createServer(function(request, response) {
 	console.log("Listening on 2000");
     });
 ```    
-- change filePath which links to a local .mp3 file and run the server.
+- change filePath which links to a local .mp3 file.
 ```
 var filePath = '< your local .mp3 file >';
 ```
+- run the server.
 ```
 node server.js
 ```
