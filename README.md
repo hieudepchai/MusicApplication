@@ -26,5 +26,8 @@ http.createServer(function(request, response) {
 	console.log("Listening on 2000");
     });
 ```    
-- change filePath which links to a local .mp3 file and run the server (node server.js)
+- change filePath which links to a local .mp3 file and run the server.
+```
+node server.js
+```
 - change streamURL in streamFragment.java to "http://< your localhost IP >:2000/";
