@@ -10,7 +10,7 @@ var http = require('http'),
     util = require('util');
 
 http.createServer(function(request, response) {
-    var filePath = 'Em-Gi-Oi-Jack-K-ICM.mp3';
+    var filePath = '< your local .mp3 file >';
     var stat = fileSystem.statSync(filePath);
     
     response.writeHead(200, {
@@ -26,10 +26,6 @@ http.createServer(function(request, response) {
 	console.log("Listening on 2000");
     });
 ```    
-- Change filePath which links to a local .mp3 file.
-```
-var filePath = '< your local .mp3 file >';
-```
 - Run the server.
 ```
 node server.js
