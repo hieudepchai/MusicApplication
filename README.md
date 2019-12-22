@@ -28,6 +28,9 @@ http.createServer(function(request, response) {
 ```    
 - change filePath which links to a local .mp3 file and run the server.
 ```
+var filePath = '< your local .mp3 file >';
+```
+```
 node server.js
 ```
 - change **streamURL** in **streamFragment.java** to "http://< your localhost IP >:2000/"
